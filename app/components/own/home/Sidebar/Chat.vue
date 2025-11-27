@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Ellipsis } from "lucide-vue-next";
-import { computed, defineProps } from "vue";
+import { defineProps } from "vue";
 
 const { title } = defineProps<{
   title: string;

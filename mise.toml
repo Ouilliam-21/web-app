@@ -17,6 +17,10 @@ run = "pnpm dlx nuxt typecheck"
 description = "Run the lint"
 run = "pnpm exec eslint --ext .js,.ts,.vue . --fix"
 
+[tasks.validate]
+description = "Run the lint && typechecker"
+run = "mise lint && mise typecheck"
+
 [tasks.act_validate]
 description = "Run the github action validate locally"
 run = "act -W .github/workflows/validate.yml"

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Sparkles, Star } from "lucide-vue-next";
+import { computed } from "vue";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,21 +10,26 @@ import Chat from "./Chat.vue";
 import Dialog from "./Dialog.vue";
 import Saved from "./Saved.vue";
 
+
 const { chats } = defineProps<{
   saves: { name: string }[];
-  chats: { title: string; date: string }[];
+  chats: {title:string, date:string}[];
 }>();
 
 // Group chats by their date
-const groupedChats = computed(() => {
-  return chats.reduce((acc: Record<string, typeof chats>, chat) => {
-    if (!acc[chat.date]) {
-      acc[chat.date] = [];
+const  groupedChats = computed<Record<string, { title: string; date: string }[]>>(() => {
+  const result: Record<string, { title: string; date: string }[]> = {};
+
+  for (const chat of chats) {
+    const key = chat.date;
+    if (!result[key]) {
+      result[key] = [];
     }
-    acc[chat.date].push(chat);
-    return acc;
-  }, {} as Record<string, typeof chats>);
-});
+    result[key].push(chat);
+  }
+
+  return result;
+});;
 </script>
 
 <template>
@@ -95,7 +101,7 @@ const groupedChats = computed(() => {
               </svg>
             </summary>
             <div class="space-y-1">
-              <Chat v-for="chat in chats" :title="chat.title" />
+              <Chat v-for="(chat,index) in chats" :key="index" :title="chat.title" />
             </div>
           </details>
         </div>

@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { VideoPlayer, VideoEditing, ClipHistory } from "~/components/own/video";
+
+import { ClipHistory,VideoEditing, VideoPlayer } from "~/components/own/video";
 
 const showCreateClipDialog = ref(false);
 
-const handleClipSave = (clipData: { title: string; duration: string }) => {
-  console.log("Clip saved:", clipData);
-  // Handle clip save logic here
-};
 </script>
 
 <template>

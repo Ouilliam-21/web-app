@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { CheckCircle2, Circle } from "lucide-vue-next";
+import { computed,ref } from "vue";
+
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Circle } from "lucide-vue-next";
 
 // Mock user data
 const users = ref([

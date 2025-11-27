@@ -9,6 +9,7 @@ export default defineConfig([
   {
     ignores: [
       ".nuxt/**",
+      "app/components/ui/**",
       "node_modules/**",
       "eslint.config.ts",
       "tsconfig.json",

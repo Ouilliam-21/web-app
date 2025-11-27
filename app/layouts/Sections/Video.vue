@@ -4,7 +4,6 @@ import { Pages } from "~/utils/constants/pages";
 </script>
 <template>
   <Element :link="Pages.Video.link">
-    <template #default="{ iconClass }">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="24"
@@ -27,7 +26,6 @@ import { Pages } from "~/utils/constants/pages";
         <path d="M2 21v-4" />
         <path d="M7 9h.01" class="point-breathe" color="red" />
       </svg>
-    </template>
   </Element>
 </template>
 
