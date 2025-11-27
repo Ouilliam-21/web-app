@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import * as icons from "lucide-vue-next";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
 
 import { Pages } from "~/utils/constants/pages";
 
