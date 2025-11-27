@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { Component } from "vue";
+
 import {
   Item,
   ItemContent,
   ItemDescription,
-  ItemTitle,
   ItemMedia,
+  ItemTitle,
 } from "@/components/ui/item";
 
 const props = defineProps<{

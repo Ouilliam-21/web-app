@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import * as icons from "lucide-vue-next";
+//import * as icons from "lucide-vue-next";
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+
 import { cn } from "@/lib/utils";
 
 const props = withDefaults(
@@ -13,12 +16,13 @@ const props = withDefaults(
 const route = useRoute();
 const isActivePage = computed(() => route.path === props.link);
 
+/*
 const icon = computed(() => {
   if (props.name) {
     return icons[props.name as keyof typeof icons];
   }
   return "Video";
-});
+  }); */
 
 const iconClass = computed(() =>
   cn(
@@ -38,7 +42,6 @@ const iconClass = computed(() =>
   >
     <!-- Custom SVG slot takes priority - classes are passed via scoped slot -->
     <slot :iconClass="iconClass" v-if="name === undefined" />
-    <component v-else :is="icon" />
+    <!--<component v-else :is="icon"/>-->
   </NuxtLink>
 </template>
-

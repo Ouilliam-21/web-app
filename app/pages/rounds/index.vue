@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent,TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ActiveRoundTab, HistoryTab } from "~/components/own/rounds";
 </script>
 

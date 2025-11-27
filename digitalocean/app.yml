@@ -1,0 +1,16 @@
+name: app-preview-on-pr
+services:
+  - name: nuxt-web
+    github:
+      branch: main
+      repo: Michelprogram/oui-lliam-app
+      deploy_on_push: true
+    environment_slug: node-js
+    build_command: npm run build
+    run_command: npm run preview
+    http_port: 3000
+    envs:
+      - key: NUXT_HOST
+        value: 0.0.0.0
+      - key: NUXT_PORT
+        value: "3000"

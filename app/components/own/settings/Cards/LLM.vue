@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import Card from "./Card.vue";
 
 import {
   Select,
@@ -9,6 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import Card from "./Card.vue";
 
 // Mock data for LLM models
 const llmModels = ref([

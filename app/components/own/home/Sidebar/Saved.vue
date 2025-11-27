@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, defineProps } from "vue";
 import { Ellipsis } from "lucide-vue-next";
+import { computed, defineProps } from "vue";
 
 const props = defineProps<{
   name: string;

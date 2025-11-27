@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import Card from "./Card.vue";
+
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
+import Card from "./Card.vue";
 
 // Mock data for users
 const users = ref([

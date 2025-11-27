@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { Turtle } from "lucide-vue-next";
+import { computed,ref } from "vue";
+
 import {
   Select,
   SelectContent,
@@ -7,15 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import PropositionsList from "./Shared/PropositionsList.vue";
-import VotingStepper from "./Shared/VotingStepper.vue";
 import UserVoteStatus from "./Shared/UserVoteStatus.vue";
 import WinningProposition from "./Shared/WinningProposition.vue";
-import { Turtle } from "lucide-vue-next";
 
-const emit = defineEmits<{
-  (e: "select-history", id: string): void;
-}>();
 
 // Mock history data
 const historyItems = ref([
@@ -32,10 +30,6 @@ const selectedHistory = computed(() => {
   return historyItems.value.find((item) => item.id === selectedHistoryId.value);
 });
 
-const handleHistorySelect = (id: string) => {
-  selectedHistoryId.value = id;
-  emit("select-history", id);
-};
 </script>
 
 <template>

@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { Settings } from "lucide-vue-next";
-import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-vue-next";
+
+import { Button } from "@/components/ui/button";
 </script>
 <template>
   <div class="flex">

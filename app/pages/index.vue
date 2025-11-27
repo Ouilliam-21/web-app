@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Sidebar } from "~/components/own/home/Sidebar";
-import { Header } from "~/components/own/home/Header";
+
 import { ChatBox } from "~/components/own/home/ChatBox";
+import { Header } from "~/components/own/home/Header";
+import { Sidebar } from "~/components/own/home/Sidebar";
 
 const saves = ref([
   {

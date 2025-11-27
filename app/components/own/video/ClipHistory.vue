@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { Clock, User } from "lucide-vue-next";
 import { ref } from "vue";
+
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -8,11 +11,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { Clock, User } from "lucide-vue-next";
-
-import { Button } from "@/components/ui/button";
-import { Scissors } from "lucide-vue-next";
 
 // Mock data for clip history
 const clipHistory = ref([

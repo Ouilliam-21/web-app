@@ -1,2 +1,34 @@
 [tools]
 node = "22.18.0"
+
+[tasks.build]
+description = "Build the nuxt application"
+run = "pnpm run build"
+
+[tasks.dev]
+description = "Run the dev application"
+run = "pnpm run dev"
+
+[tasks.typecheck]
+description = "Run the typechecker"
+run = "pnpm dlx nuxt typecheck"
+
+[tasks.lint]
+description = "Run the lint"
+run = "pnpm exec eslint --ext .js,.ts,.vue . --fix"
+
+[tasks.validate]
+description = "Run the lint && typechecker"
+run = "mise lint && mise typecheck"
+
+[tasks.act_validate]
+description = "Run the github action validate locally"
+run = "act -W .github/workflows/validate.yml"
+
+[tasks.act_preview]
+description = "Run the github action preview locally"
+run = "act --secret-file .act.env -W .github/workflows/preview.yml"
+
+[tasks.act_clear_preview]
+description = "Run the github action clear_preview locally"
+run = ""

@@ -1,9 +1,8 @@
 <script lang="ts" setup>
-import { ref, computed } from "vue";
-import { Textarea } from "@/components/ui/textarea";
-import { Pen, ArrowUp } from "lucide-vue-next";
-import { Button } from "@/components/ui/button";
+import { ArrowUp, Pen } from "lucide-vue-next";
+import { computed, ref } from "vue";
 
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -11,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
 

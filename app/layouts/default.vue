@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Bot, Rounds, Theme, Video, Settings } from "./Sections";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+import { Bot, Rounds, Settings,Theme, Video } from "./Sections";
 </script>
 
 <template>

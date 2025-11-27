@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
+
 import PropositionsList from "./Shared/PropositionsList.vue";
-import VotingStepper from "./Shared/VotingStepper.vue";
 import UserVoteStatus from "./Shared/UserVoteStatus.vue";
+import VotingStepper from "./Shared/VotingStepper.vue";
 
 const selectedPropositionId = ref<string | null>(null);
 const votedUsers = ref(5); // Mock: 5 out of 8 users have voted
@@ -12,10 +13,7 @@ const handleSelectProposition = (id: string) => {
   selectedPropositionId.value = id;
 };
 
-const handleVote = (propositionId: string) => {
-  console.log("Voted for proposition:", propositionId);
-  // Handle vote logic here
-};
+
 </script>
 
 <template>

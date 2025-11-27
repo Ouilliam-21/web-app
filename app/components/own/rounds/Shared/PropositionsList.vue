@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { Bomb, Dumbbell,Skull, Turtle, Vote } from "lucide-vue-next";
 import { ref } from "vue";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Item,
@@ -9,16 +11,6 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
-
-import { Vote, Turtle, Skull, Bomb, Dumbbell } from "lucide-vue-next";
-
-const props = defineProps<{
-  readonly?: boolean;
-}>();
-
-const emit = defineEmits<{
-  (e: "select-proposition", id: string): void;
-}>();
 
 // Mock propositions data
 const propositions = ref([
@@ -56,21 +48,8 @@ const propositions = ref([
   },
 ]);
 
-const selectedProposition = ref<string | null>(null);
 
-const difficultyColors = {
-  easy: "bg-green-500",
-  medium: "bg-yellow-500",
-  hard: "bg-orange-500",
-  expert: "bg-red-500",
-};
 
-const handleSelect = (id: string) => {
-  if (!props.readonly) {
-    selectedProposition.value = id;
-    emit("select-proposition", id);
-  }
-};
 </script>
 
 <template>

@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import Card from "./Card.vue";
+
 import { Switch } from "@/components/ui/switch";
+
+import Card from "./Card.vue";
 
 // Mock data for services
 const services = ref([
