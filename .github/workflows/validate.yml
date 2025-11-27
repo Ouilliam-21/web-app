@@ -2,15 +2,13 @@ name: Validate linter & typecheck
 
 on:
   pull_request:
-    paths:
-      - '**.ts'
-      - '**.vue'
-      - '**.css'
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-  
+
 jobs:
   lint:
     timeout-minutes: 10
@@ -18,39 +16,38 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
-      - name: Set up Mise  
+
+      - name: Set up Mise
         uses: jdx/mise-action@v2
-      
+
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
           version: latest
-            
+
       - name: Install dependencies
         run: pnpm install
-        
+
       - name: Typecheck
         run: mise run lint
- 
+
   typecheck:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
-      - name: Set up Mise  
+
+      - name: Set up Mise
         uses: jdx/mise-action@v2
-      
+
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
           version: latest
-            
+
       - name: Install dependencies
         run: pnpm install
-        
+
       - name: Typecheck
         run: mise run typecheck
-               
