@@ -4,6 +4,8 @@
 @theme {
   --color-midnight: rgb(5, 9, 37);
   --color-midnight-light: rgb(250, 250, 250);
+  --color-midnight-dark: #121212;
+  --color-midnight-dark-secondary: #b0f48a;
 }
 
 @custom-variant dark (&:is(.dark *));
