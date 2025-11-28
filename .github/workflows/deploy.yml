@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4        
+        uses: actions/checkout@v4
       - name: Log in to the Container registry
         uses: docker/login-action@v3.3.0
         with:
@@ -31,5 +31,7 @@ jobs:
         uses: digitalocean/app_action/deploy@v2
         env:
           SAMPLE_DIGEST: ${{ steps.push.outputs.digest }}
+          GHCR_CREDENTIALS: ${{ secrets.GHCR_CREDENTIALS }}
         with:
+          app_spec_location: digitalocean/deploy.yml
           token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
