@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useFetch } from "#imports";
 import { UserRole } from "~~/shared/db/user";
 
 import Card from "./Card.vue";
 
-const { data: users } = await useFetch("/api/user");
+const { data: users } = useFetch("/api/user");
 </script>
 <template>
   <Card

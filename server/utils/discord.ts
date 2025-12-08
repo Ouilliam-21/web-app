@@ -11,7 +11,7 @@ type Token = {
 export interface User {
   id: string;
   username: string;
-  global_name: any;
+  global_name: string;
   discriminator: string;
   avatar: string;
   verified: boolean;

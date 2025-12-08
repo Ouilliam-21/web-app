@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 
-import { User } from "#shared/db/user";
+import type { User } from "#shared/db/user";
 import { isAbsent } from "#shared/utils/optional";
 import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 

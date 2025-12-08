@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { getCookie } from "h3";
 
-import { User } from "#shared/db/user";
+import type { User } from "#shared/db/user";
 import { isAbsent } from "#shared/utils/optional";
 import {
   apiError,
