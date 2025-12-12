@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import "vue-sonner/style.css";
+
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Toaster } from "@/components/ui/sonner";
 import { useUserService } from "~/services/user";
 
 import Dialog from "./Loggin/Container.vue";
 import { Bot, Clipper, Rounds, Settings, Theme, Video } from "./Sections";
-
 const { isAuthenticated, userAvatar, userDecoration } = useUserService();
 </script>
 
@@ -47,5 +49,6 @@ const { isAuthenticated, userAvatar, userDecoration } = useUserService();
                 <slot />
             </div>
         </main>
+        <Toaster />
     </div>
 </template>

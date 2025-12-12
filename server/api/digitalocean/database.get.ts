@@ -1,20 +1,11 @@
+import type { DatabaseInfoData } from "#shared/server/digitalocean";
 import { postgres } from "~~/server/db";
 import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 
-type Return = {
-  status: string;
-  name: string;
-  maxSize: number;
-  actualSize: number;
-  ratio: number;
-};
-
-export default useDefineHandler<Return>(async () => {
+export default useDefineHandler<DatabaseInfoData>(async () => {
   const { getDatabaseInfo } = useDigitalOcean();
 
-  const id = "31e8bc50-34f3-4812-8b64-340cb34385a9";
-
-  const { database } = await getDatabaseInfo(id);
+  const { database } = await getDatabaseInfo();
 
   const result = await postgres.execute<{
     pg_size_pretty: string;

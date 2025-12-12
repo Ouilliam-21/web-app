@@ -1,17 +1,16 @@
 <script setup lang="ts">
+import { SkipBack,SkipForward } from "lucide-vue-next";
+import { watch } from "vue";
+
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import type { Video } from "~/types/clipper";
 import { isAbsent } from "~~/shared/utils/optional";
-import { Skeleton } from "@/components/ui/skeleton";
-import { SkipForward, SkipBack } from "lucide-vue-next";
 
 import Dialog from "./Dialog.vue";
 import { useForm } from "./useForm";
-
-import { watch } from "vue";
 
 const { video } = defineProps<{ video: Video }>();
 
