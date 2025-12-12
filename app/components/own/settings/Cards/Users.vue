@@ -23,7 +23,7 @@ const { data: users } = useFetch("/api/user");
         >
           <div class="flex items-center gap-3">
             <div
-              class="h-3 w-3 rounded-full"
+              class="h-3 w-3 rounded-full animate-pulse"
               :class="
                 new Date().getTime() < user.expireAt
                   ? 'bg-green-500'

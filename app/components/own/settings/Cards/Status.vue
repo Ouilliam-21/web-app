@@ -1,24 +1,21 @@
 <script lang="ts" setup>
-import { ref } from "vue";
+import { computed } from "vue";
 
-import { Switch } from "@/components/ui/switch";
+import { useFetch } from "#imports";
 
 import Card from "./Card.vue";
 
-// Mock data for services
-const services = ref([
-  { id: "api", name: "API Service", status: true },
-  { id: "websocket", name: "WebSocket Service", status: false },
-  { id: "speech", name: "Speech Service", status: true },
-  { id: "llm", name: "LLM Service", status: true },
-]);
+const { data: database } = useFetch("/api/digitalocean/database");
 
-const toggleService = (serviceId: string) => {
-  const service = services.value.find((s) => s.id === serviceId);
-  if (service) {
-    service.status = !service.status;
-  }
-};
+const bgDatabase = computed(() => {
+  if (database.value.type === "error") return "bg-transparent";
+  if (database.value.data.ratio <= 30) return "bg-green-500";
+  if (database.value.data.ratio <= 50) return "bg-green-700";
+  if (database.value.data.ratio <= 70) return "bg-orange-500";
+  if (database.value.data.ratio <= 80) return "bg-orange-700";
+  if (database.value.data.ratio <= 90) return "bg-red-500";
+  return "bg-red-700";
+});
 </script>
 <template>
   <Card
@@ -27,22 +24,32 @@ const toggleService = (serviceId: string) => {
   >
     <div class="space-y-4">
       <div
-        v-for="service in services"
-        :key="service.id"
         class="flex items-center justify-between"
+        v-if="database?.type === 'success'"
       >
         <div class="flex flex-col">
-          <span class="font-medium">{{ service.name }}</span>
-          <span class="text-sm text-muted-foreground">
-            {{ service.status ? "Running" : "Stopped" }}
-          </span>
+          <div class="flex gap-1.5 items-center">
+            <span class="font-medium">{{ database.data.name }}</span>
+            <span class="size-3 rounded-full animate-pulse bg-green-500"></span>
+          </div>
+          <p class="text-sm text-foreground">{{ database.data.status }}</p>
         </div>
-        <Switch
-          :checked="service.status"
-          @update:checked="toggleService(service.id)"
-        />
+        <div class="flex gap-2 items-center">
+          <span class="relative z-10 italic text-sm"
+            >{{ database.data.ratio }}%</span
+          >
+
+          <div
+            class="relative size-8 border-2 rounded-sm text-center overflow-hidden"
+          >
+            <span
+              class="absolute inset-x-0 bottom-0 z-0"
+              :class="bgDatabase"
+              :style="{ height: database.data.ratio + '%' }"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </Card>
 </template>
-

@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     discordClientSecret: process.env.DISCORD_CLIENT_SECRET,
     discordCallbackUrl: process.env.DISCORD_CALLBACK_URL,
     discordRedirectUrl: process.env.DISCORD_REDIRECT_URL,
+    digitalOceanToken: process.env.DIGITAL_OCEAN_TOKEN,
   },
   devtools: { enabled: true },
   modules: ["@nuxtjs/tailwindcss", "shadcn-nuxt", "@pinia/nuxt"],
