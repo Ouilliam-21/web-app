@@ -3,7 +3,7 @@ services:
 - name: sample
   image:
     registry_type: GHCR
-    registry: "Ouilliam-21"
+    registry: "ouilliam-21"
     repository: "web-app"
     registry_credentials: ${GHCR_CREDENTIALS}
     digest: ${SAMPLE_DIGEST}
