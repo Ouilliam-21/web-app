@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import * as icons from "lucide-vue-next";
-import { type Component,computed } from "vue";
+import { type Component, computed } from "vue";
 import { useRoute } from "vue-router";
+
+import { isPresent } from "#shared/utils/optional";
 
 const props = withDefaults(
   defineProps<{
@@ -15,10 +17,10 @@ const route = useRoute();
 const isActivePage = computed(() => route.path === props.link);
 
 const icon = computed(() => {
-  if (props.name) {
-    return icons[props.name as keyof typeof icons] as Component;
+  if (!isPresent(props.name)) {
+    return icons.Video;
   }
-  return icons.Video;
+  return (icons[props.name as keyof typeof icons] as Component) ?? icons.Video;
 });
 </script>
 

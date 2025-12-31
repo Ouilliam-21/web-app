@@ -68,8 +68,7 @@ const emit = defineEmits<{
                         </span>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Test</p>
-                        <!-- <slot name="label" :child="child" /> -->
+                        <slot name="tooltip" :child="child" />
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider></ContextMenuTrigger

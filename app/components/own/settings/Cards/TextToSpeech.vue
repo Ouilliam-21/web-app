@@ -8,22 +8,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useFetch } from "#app";
 
 import Card from "./Card.vue";
 
-// Mock data for TTS models
-const ttsModels = ref([
-  { value: "tts-1", label: "TTS-1" },
-  { value: "tts-1-hd", label: "TTS-1 HD" },
-  { value: "alloy", label: "Alloy" },
-  { value: "echo", label: "Echo" },
-  { value: "fable", label: "Fable" },
-  { value: "onyx", label: "Onyx" },
-  { value: "nova", label: "Nova" },
-  { value: "shimmer", label: "Shimmer" },
-]);
+const { data: tts } = useFetch("/api/inference/tts/list");
+const { data: activeTTS } = useFetch("/api/inference/tts/active");
 
-const selectedTtsModel = ref("tts-1");
+const ttsModels = ref<{ value: string; label: string }[]>([]);
+const selectedTtsModel = ref("");
+
+if (tts.value?.type === "success") {
+  ttsModels.value = tts.value.data.tts.map((tts) => ({
+    value: tts,
+    label: tts,
+  }));
+}
+
+if (activeTTS.value?.type === "success") {
+  selectedTtsModel.value = activeTTS.value.data.current_tts;
+}
 </script>
 <template>
   <Card
@@ -47,6 +51,6 @@ const selectedTtsModel = ref("tts-1");
           {{ model.label }}
         </SelectItem>
       </SelectContent>
-    </Select></Card
-  >
+    </Select>
+  </Card>
 </template>

@@ -15,9 +15,15 @@ export const useUserService = () => {
     return `https://cdn.discordapp.com/avatar-decoration-presets/${state.user.decoration}.webp?size=512`;
   });
 
+  const username = computed(() => {
+    if (state.kind === "anonymous") return "";
+    return state.user.name;
+  });
+
   return {
     userAvatar,
     userDecoration,
     isAuthenticated,
+    username,
   };
 };

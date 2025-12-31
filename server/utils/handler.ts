@@ -1,25 +1,6 @@
-import type { EventHandler,EventHandlerRequest, H3Event } from "h3";
+import type { EventHandler, EventHandlerRequest, H3Event } from "h3";
 
-// Error response - always type: "error"
-export type ApiError = {
-  type: "error";
-  title: string;
-  detail: string;
-  status: number;
-  errors?: {
-    field: string;
-    issue: string;
-  }[];
-};
-
-// Success response - always type: "success"
-export type ApiSuccess<T> = {
-  type: "success";
-  data: T;
-};
-
-// Union type
-export type ApiResponse<T> = ApiSuccess<T> | ApiError;
+import type { ApiError, ApiResponse,ApiSuccess } from "#shared/server/handler";
 
 // Helper to create error responses
 export function apiError(error: Omit<ApiError, "type">): ApiError {

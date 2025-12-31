@@ -15,6 +15,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.948.0",
     "@huggingface/transformers": "^3.8.1",
     "@pinia/nuxt": "^0.11.3",
     "@vueuse/core": "^14.0.0",
@@ -22,6 +23,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.0",
+    "eventsource": "^4.1.0",
     "lucide-vue-next": "^0.554.0",
     "nuxt": "^4.2.1",
     "pg": "^8.16.3",
@@ -31,6 +33,7 @@
     "tailwind-merge": "^3.4.0",
     "vue": "^3.5.25",
     "vue-router": "^4.6.3",
+    "vue-sonner": "^2.0.9",
     "wavefile": "^11.0.0",
     "wavesurfer.js": "^7.12.1"
   },
@@ -39,6 +42,7 @@
     "@nuxtjs/tailwindcss": "7.0.0-beta.1",
     "@tailwindcss/vite": "^4.1.17",
     "@types/better-sqlite3": "^7.6.13",
+    "@types/eventsource": "^3.0.0",
     "@types/node": "^24.10.1",
     "@types/pg": "^8.15.6",
     "drizzle-kit": "^0.31.8",

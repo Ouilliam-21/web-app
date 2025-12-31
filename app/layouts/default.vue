@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import "vue-sonner/style.css";
+
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { useUserService } from "~/services/user";
 
 import Dialog from "./Loggin/Container.vue";
 import { Bot, Clipper, Rounds, Settings, Theme, Video } from "./Sections";
-
 const { isAuthenticated, userAvatar, userDecoration } = useUserService();
 </script>
 
@@ -13,7 +14,7 @@ const { isAuthenticated, userAvatar, userDecoration } = useUserService();
     <Dialog v-if="!isAuthenticated" />
 
     <div class="bg-secondary">
-      <div class="grid grid-rows-[auto_1fr_1fr_auto] h-full">
+      <div class="grid grid-rows-[auto_1fr_auto] h-full">
         <div class="flex items-center gap-2 p-4 relative">
           <Avatar class="size-12 relative">
             <AvatarImage :src="userAvatar" />
@@ -31,14 +32,11 @@ const { isAuthenticated, userAvatar, userDecoration } = useUserService();
           <Video />
         </div>
 
-        <DevOnly>
-          <div class="border-t border-border flex flex-col items-center gap-2">
-            <Clipper class="mt-2" />
-          </div>
-        </DevOnly>
-
         <!-- Sidebar footer -->
         <div class="flex flex-col gap-3 p-4">
+          <DevOnly>
+            <Clipper class="mt-2" />
+          </DevOnly>
           <Settings />
           <Theme />
         </div>

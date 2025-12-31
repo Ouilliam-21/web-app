@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 import {
   Select,
@@ -8,22 +8,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useFetch } from "#app";
 
 import Card from "./Card.vue";
 
-// Mock data for LLM models
-const llmModels = ref([
-  { value: "gpt-4", label: "GPT-4" },
-  { value: "gpt-4-turbo", label: "GPT-4 Turbo" },
-  { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo" },
-  { value: "claude-3-opus", label: "Claude 3 Opus" },
-  { value: "claude-3-sonnet", label: "Claude 3 Sonnet" },
-  { value: "claude-3-haiku", label: "Claude 3 Haiku" },
-  { value: "llama-3-70b", label: "Llama 3 70B" },
-  { value: "llama-3-8b", label: "Llama 3 8B" },
-]);
+const { data: llms } = useFetch("/api/inference/llm/list");
+const { data: activeLLM } = useFetch("/api/inference/llm/active");
 
-const selectedLlmModel = ref("gpt-4");
+const llmModels = ref<{ value: string; label: string }[]>([]);
+const selectedLlmModel = ref("");
+
+if (llms.value?.type === "success") {
+  llmModels.value = llms.value.data.llm.map((llm) => ({
+    value: llm,
+    label: llm,
+  }));
+}
+
+if (activeLLM.value?.type === "success") {
+  selectedLlmModel.value = activeLLM.value.data.current_llm;
+}
+
+watch(selectedLlmModel, async (newValue) => {
+  await useFetch("/api/inference/llm/set", {
+    method: "PUT",
+    body: {
+      name: newValue,
+    },
+  });
+});
 </script>
 <template>
   <Card
@@ -49,4 +62,3 @@ const selectedLlmModel = ref("gpt-4");
     </Select>
   </Card>
 </template>
-

@@ -62,12 +62,12 @@ export const useForm = () => {
       for (let channel = 0; channel < numChannels; channel++) {
         const sample = Math.max(
           -1,
-          Math.min(1, buffer.getChannelData(channel)[i] ?? 0)
+          Math.min(1, buffer.getChannelData(channel)[i] ?? 0),
         );
         view.setInt16(
           offset,
           sample < 0 ? sample * 0x8000 : sample * 0x7fff,
-          true
+          true,
         );
         offset += 2;
       }
@@ -103,7 +103,7 @@ export const useForm = () => {
     const clippedBuffer = audioContext.createBuffer(
       audioBuffer.numberOfChannels,
       duration,
-      sampleRate
+      sampleRate,
     );
 
     // Copy the audio data for each channel
@@ -136,7 +136,8 @@ export const useForm = () => {
       waveColor: "rgb(200, 0, 200)",
       progressColor: "rgb(100, 0, 100)",
       media: video,
-      barWidth: 8,
+      barWidth: 5,
+      barHeight: 8,
       barGap: 1,
       barRadius: 8,
       minPxPerSec: 4,
@@ -174,6 +175,24 @@ export const useForm = () => {
     wavesurfer.value.zoom(value);
   };
 
+  const onUpdateBarSize = (values: Maybe<number[]>) => {
+    if (isAbsent(values)) return;
+    const value = values.at(0);
+    if (isAbsent(value) || isAbsent(wavesurfer.value)) return;
+    const options = wavesurfer.value.options;
+    wavesurfer.value.setOptions({ ...options, barHeight: value });
+  };
+
+  const onForward = (time: number) => {
+    if (isAbsent(wavesurfer.value)) return;
+    wavesurfer.value.setTime(wavesurfer.value.getCurrentTime() + time);
+  };
+
+  const onBackward = (time: number) => {
+    if (isAbsent(wavesurfer.value)) return;
+    wavesurfer.value.setTime(wavesurfer.value.getCurrentTime() - time);
+  };
+
   const onClickCancel = () => {
     if (isAbsent(activeRegion.value)) return;
     activeRegion.value.remove();
@@ -190,6 +209,8 @@ export const useForm = () => {
   };
 
   return {
+    onForward,
+    onBackward,
     wavesurfer,
     activeRegion,
     isOpen,
@@ -199,5 +220,6 @@ export const useForm = () => {
     onUpdateZoom,
     onClickCancel,
     onClickCreateAudio,
+    onUpdateBarSize,
   };
 };

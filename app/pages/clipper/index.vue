@@ -18,8 +18,6 @@ const {
 useAsyncData("video", () => fetchVideos());
 useAsyncData("audios", () => fetchAudios());
 
-//Révision:
-// A partir du slide 7 à 39 pour le slide 3_d le truc avec le moteur de règle
 </script>
 <template>
   <div class="h-screen grid grid-cols-6 grid-rows-6 gap-6 p-6">
@@ -45,6 +43,9 @@ useAsyncData("audios", () => fetchAudios());
         <span class="truncate cursor-pointer">
           {{ child.name }}
         </span>
+      </template>
+      <template #tooltip="{ child }">
+        {{ child.name }}
       </template>
     </Tree>
     <Clipper
@@ -80,6 +81,9 @@ useAsyncData("audios", () => fetchAudios());
         <span class="truncate cursor-pointer">
           {{ child.filename }}
         </span>
+      </template>
+      <template #tooltip="{ child }">
+        {{ child.filename }}
       </template>
     </Tree>
   </div>
