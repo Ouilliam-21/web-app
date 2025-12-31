@@ -9,6 +9,8 @@ export default defineNitroPlugin(() => {
   const url = config.inferenceApiUrl;
   const token = config.inferenceAuthToken;
 
+  console.log(url, token);
+
   if (isAbsent(url)) {
     console.warn(
       "[Inference SSE] Missing inferenceStatusUrl in runtime config"
