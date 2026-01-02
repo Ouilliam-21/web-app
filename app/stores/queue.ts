@@ -26,6 +26,13 @@ export const useQueueStore = defineStore("queue", () => {
     }
   };
 
+  const prependMessage = (job: ProcessingRiotEventJob) => {
+    if (!alreadyExist(job.id)) {
+      messagesState.value.unshift(job);
+      messagesIds.value.add(job.id);
+    }
+  };
+
   const removeMessage = (id: string) => {
     const index = messagesState.value.findIndex((m) => m.id === id);
     if (index !== -1) {
@@ -49,5 +56,6 @@ export const useQueueStore = defineStore("queue", () => {
     getCompletedMessages,
     alreadyExist,
     removeMessage,
+    prependMessage,
   };
 });

@@ -32,6 +32,9 @@ dependencies:
   eventsource:
     specifier: ^4.1.0
     version: 4.1.0
+  howler:
+    specifier: ^2.2.4
+    version: 2.2.4
   lucide-vue-next:
     specifier: ^0.554.0
     version: 0.554.0(vue@3.5.25)
@@ -6167,6 +6170,10 @@ packages:
 
   /hookable@5.5.3:
     resolution: {integrity: sha512-Yc+BQe8SvoXH1643Qez1zqLRmbA5rCL+sSmk6TVos0LWVfNIB7PGncdlId77WzLGSIB5KaWgTaNTs2lNVEI6VQ==}
+    dev: false
+
+  /howler@2.2.4:
+    resolution: {integrity: sha512-iARIBPgcQrwtEr+tALF+rapJ8qSc+Set2GJQl7xT1MQzWaVkFebdJhR3alVlSiUf5U7nAANKuj3aWpwerocD5w==}
     dev: false
 
   /http-errors@2.0.1:

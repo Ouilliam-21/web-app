@@ -1,4 +1,4 @@
-import { eq, or } from "drizzle-orm";
+import { and, desc,eq, lt, or } from "drizzle-orm";
 
 import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 import type { ProcessingRiotEventJob } from "~~/shared/sse/inference/type";
@@ -33,26 +33,42 @@ const mapProcessingJobToProcessingRiotEventJob = (
   };
 };
 
-export default useDefineHandler<{ events: ProcessingRiotEventJob[] }>(
-  async () => {
-    const events = await postgres
-      .select()
-      .from(processingRiotEventsJobsTable)
-      .where(
-        or(
-          eq(
-            processingRiotEventsJobsTable.status,
-            ProcessingRiotEventStatus.COMPLETED
-          ),
-          eq(
-            processingRiotEventsJobsTable.status,
-            ProcessingRiotEventStatus.FAILED
-          )
-        )
-      );
+export default useDefineHandler<{
+  events: ProcessingRiotEventJob[];
+  hasMore: boolean;
+}>(async (event) => {
+  const query = getQuery(event);
+  const limit = Number(query.limit) || 10;
+  const cursor = query.cursor as string | undefined;
 
-    return apiSuccess({
-      events: events.map(mapProcessingJobToProcessingRiotEventJob),
-    });
+  const conditions = [
+    or(
+      eq(
+        processingRiotEventsJobsTable.status,
+        ProcessingRiotEventStatus.COMPLETED
+      ),
+      eq(processingRiotEventsJobsTable.status, ProcessingRiotEventStatus.FAILED)
+    ),
+  ];
+
+  if (cursor) {
+    conditions.push(
+      lt(processingRiotEventsJobsTable.createdAt, new Date(cursor))
+    );
   }
-);
+
+  const events = await postgres
+    .select()
+    .from(processingRiotEventsJobsTable)
+    .where(and(...conditions))
+    .orderBy(desc(processingRiotEventsJobsTable.createdAt))
+    .limit(limit + 1); // Fetch one extra to check if there are more
+
+  const hasMore = events.length > limit;
+  const itemsToReturn = hasMore ? events.slice(0, limit) : events;
+
+  return apiSuccess({
+    events: itemsToReturn.map(mapProcessingJobToProcessingRiotEventJob),
+    hasMore,
+  });
+});

@@ -1,13 +1,13 @@
+import { Howl } from "howler";
+
 import type { ProcessingRiotEventJob } from "~~/shared/sse/inference/type";
 
-export const useAudioQueue = (
-  onRemove: (evt: ProcessingRiotEventJob) => void
-) => {
+export const useAudioQueue = () => {
   const audioQueue = ref<ProcessingRiotEventJob[]>([]);
-  const currentAudio = ref<HTMLAudioElement | null>(null);
+  const currentAudio = ref<Maybe<HTMLAudioElement>>(undefined);
   const isPlaying = ref(false);
   const currentMessage = ref<Maybe<ProcessingRiotEventJob>>(undefined);
-  const minDelayBetweenMessages = 2000; // 2 secondes
+  const minDelayBetweenMessages = 2000;
 
   const addToQueue = (job: ProcessingRiotEventJob) => {
     audioQueue.value.push(job);
@@ -18,35 +18,25 @@ export const useAudioQueue = (
     if (audioQueue.value.length === 0) return;
 
     const nextMessage = audioQueue.value.shift();
-    onRemove(nextMessage!);
-
     currentMessage.value = nextMessage;
     isPlaying.value = true;
 
-    const audio = new Audio(nextMessage!.audio_url!);
-    currentAudio.value = audio;
+    const sound = new Howl({
+      src: [nextMessage?.audio_url],
+      html5: true,
+      onend: function () {
+        setTimeout(() => {
+          isPlaying.value = false;
+          currentMessage.value = null;
+          currentAudio.value = null;
 
-    audio.onended = () => {
-      // Attendre minimum 2 secondes avant le prochain message
-      setTimeout(() => {
-        isPlaying.value = false;
-        currentMessage.value = null;
-        currentAudio.value = null;
-
-        processQueue();
-      }, minDelayBetweenMessages);
-    };
-
-    audio.onerror = (error) => {
-      console.error("Error playing audio:", error);
-      isPlaying.value = false;
-      currentMessage.value = null;
-      currentAudio.value = null;
-      processQueue();
-    };
+          processQueue();
+        }, minDelayBetweenMessages);
+      },
+    });
 
     try {
-      await audio.play();
+      await sound.play();
     } catch (error) {
       console.error("Error starting audio playback:", error);
       isPlaying.value = false;

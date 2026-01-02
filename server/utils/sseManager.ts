@@ -1,5 +1,9 @@
+import { eq } from "drizzle-orm";
 import { EventEmitter } from "events";
 import { EventSource } from "eventsource";
+
+import { postgres } from "../db";
+import { config as configTable,GPUStatus } from "../db/user/schema";
 
 class SSEManager extends EventEmitter {
   private eventSource: undefined | EventSource = undefined;
@@ -120,14 +124,21 @@ class SSEManager extends EventEmitter {
   }
 }
 
-let sseManager: Maybe<SSEManager> = null;
+let sseManager: Maybe<SSEManager> = undefined;
 
-export const getSSEManager = () => {
-  if (!sseManager) {
-    const config = useRuntimeConfig();
-    const sseURL = config.inferenceApiUrl;
-    const token = config.inferenceAuthToken;
-    const URL = `${sseURL}/events/sse/status?token=${token}`;
+export const getSSEManager = async () => {
+  const conf = useRuntimeConfig();
+  const { gpuId, inferenceAuthToken } = conf;
+
+  const [res] = await postgres
+    .select({ ip: configTable.ip, status: configTable.status })
+    .from(configTable)
+    .where(eq(configTable.id, gpuId));
+
+  if (res.ip === "" && res.status !== GPUStatus.RUNNING) {
+    throw new Error("SSE not running");
+  } else if (!sseManager) {
+    const URL = `http://${res.ip}/events/sse/status?token=${inferenceAuthToken}`;
     sseManager = new SSEManager(URL);
   }
   return sseManager;

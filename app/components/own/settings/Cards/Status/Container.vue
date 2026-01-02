@@ -3,12 +3,14 @@ import { useFetch } from "#app";
 
 import Card from "../Card.vue";
 import Database from "./Database.vue";
+import GPU from "./Gpu.vue";
 import Space from "./Space.vue";
 import Webapp from "./Webapp.vue";
 
 const { data: webapp } = useFetch("/api/digitalocean/webapp");
 const { data: database } = useFetch("/api/digitalocean/database");
 const { data: space } = useFetch("/api/digitalocean/space");
+const { data: gpu } = useFetch("/api/digitalocean/gpu");
 </script>
 <template>
   <Card
@@ -19,6 +21,11 @@ const { data: space } = useFetch("/api/digitalocean/space");
       <Database v-if="database?.type === 'success'" :database="database.data" />
       <Webapp v-if="webapp?.type === 'success'" :webapp="webapp.data" />
       <Space v-if="space?.type === 'success'" :space="space.data" />
+      <GPU
+        v-if="gpu?.type === 'success'"
+        :status="gpu.data.status"
+        :ip="gpu.data.ip"
+      />
     </div>
   </Card>
 </template>

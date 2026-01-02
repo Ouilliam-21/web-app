@@ -106,3 +106,19 @@ export const processingRiotEventsJobs = pgTable("processing_riot_events_jobs", {
 
 export type ProcessingJob = typeof processingRiotEventsJobs.$inferSelect;
 export type NewProcessingJob = typeof processingRiotEventsJobs.$inferInsert;
+
+export enum GPUStatus {
+  STARTING = "STARTING",
+  SHUTDOWN = "SHUTDOWN",
+  RUNNING = "RUNNING",
+}
+
+const gpuStatusEnum = pgEnum("gpu_status", enumToPgEnum(GPUStatus));
+export const config = pgTable("config", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  ip: varchar("ip"),
+  idDroplet: varchar("id_droplet"),
+  status: gpuStatusEnum("status").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});

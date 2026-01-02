@@ -1,3 +1,4 @@
+import { GPUStatus } from "~~/server/db/user/schema";
 import type { ProcessingRiotEventJob } from "~~/shared/sse/inference/type";
 
 export const useSSE = (callbacks: {
@@ -13,7 +14,17 @@ export const useSSE = (callbacks: {
 
   let eventSource: Maybe<EventSource> = null;
 
-  const startListening = () => {
+  const startListening = async () => {
+    const { data: status } = await useFetch("/api/inference/status");
+
+    if (status.value?.type === "success") {
+      if (status.value.data.status !== GPUStatus.RUNNING) {
+        throw new Error("SSE not available");
+      }
+    } else {
+      throw new Error("SSE not available");
+    }
+
     if (eventSource) return;
 
     eventSource = new EventSource("/api/inference/stream");

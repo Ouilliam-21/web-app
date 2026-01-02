@@ -23,6 +23,8 @@ const { data: events } = useFetch("/api/inference/list");
 const autoScroll = ref(true);
 const store = useMessagesStore();
 
+const status = ref(true);
+
 if (events.value?.type === "success") {
   events.value.data.events.forEach((evt) => store.addMessage(evt));
 }
@@ -83,8 +85,13 @@ const state = useSSE({
   onMessage: (data) => handleEventUpdate(data),
 });
 
-onMounted(() => {
-  state.startListening();
+onMounted(async () => {
+  try {
+    await state.startListening();
+  } catch (err) {
+    status.value = true;
+    console.log("Err", err);
+  }
 });
 </script>
 
@@ -100,7 +107,11 @@ onMounted(() => {
       <CardDescription>Processing events</CardDescription>
     </CardHeader>
     <CardContent class="flex-1 min-h-0">
-      <ScrollArea ref="scrollAreaRef" class="h-full min-h-0 w-64">
+      <ScrollArea
+        ref="scrollAreaRef"
+        class="h-full min-h-0 w-64"
+        v-if="!status"
+      >
         <div class="space-y-3 pr-4" ref="messagesContainer">
           <div
             v-for="event in store.messages.value"
@@ -144,6 +155,9 @@ onMounted(() => {
           </div>
         </div>
       </ScrollArea>
+      <div>
+        <p>SSE not Available</p>
+      </div>
     </CardContent>
   </Card>
 </template>

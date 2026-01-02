@@ -1,64 +1,73 @@
 import { ofetch } from "ofetch";
+import { eq } from "drizzle-orm";
+
+import { postgres } from "../db";
+import { config as configTable, GPUStatus } from "../db/user/schema";
 
 import type { ProcessingRiotEventJob } from "~~/shared/sse/inference/type";
 
 export const useInferenceApi = () => {
   const conf = useRuntimeConfig();
 
+  const url = async () => {
+    const { gpuId } = conf;
+    return await postgres
+      .select({ ip: configTable.ip })
+      .from(configTable)
+      .where(eq(configTable.id, gpuId));
+  };
+
   const getLLMAvailableModels = async () => {
-    const response = await ofetch<{ llm: string[] }>(
-      `${conf.inferenceApiUrl}/llm/list`,
-      {
-        headers: {
-          Authorization: `Bearer ${conf.inferenceAuthToken}`,
-        },
-      }
-    );
+    const ip = await url();
+    const response = await ofetch<{ llm: string[] }>(`${ip}/llm/list`, {
+      headers: {
+        Authorization: `Bearer ${conf.inferenceAuthToken}`,
+      },
+    });
     return response;
   };
 
   const getTTSAvailableModels = async () => {
-    const response = await ofetch<{ tts: string[] }>(
-      `${conf.inferenceApiUrl}/tts/list`,
-      {
-        headers: {
-          Authorization: `Bearer ${conf.inferenceAuthToken}`,
-        },
-      }
-    );
+    const ip = await url();
+
+    const response = await ofetch<{ tts: string[] }>(`${ip}/tts/list`, {
+      headers: {
+        Authorization: `Bearer ${conf.inferenceAuthToken}`,
+      },
+    });
     return response;
   };
 
   const getCurrentLLM = async () => {
-    const response = await ofetch<{ current_llm: string }>(
-      `${conf.inferenceApiUrl}/llm`,
-      {
-        headers: {
-          Authorization: `Bearer ${conf.inferenceAuthToken}`,
-        },
-      }
-    );
+    const ip = await url();
+
+    const response = await ofetch<{ current_llm: string }>(`${ip}/llm`, {
+      headers: {
+        Authorization: `Bearer ${conf.inferenceAuthToken}`,
+      },
+    });
     return response;
   };
 
   const getCurrentTTS = async () => {
-    const response = await ofetch<{ current_tts: string }>(
-      `${conf.inferenceApiUrl}/tts`,
-      {
-        headers: {
-          Authorization: `Bearer ${conf.inferenceAuthToken}`,
-        },
-      }
-    );
+    const ip = await url();
+
+    const response = await ofetch<{ current_tts: string }>(`${ip}/tts`, {
+      headers: {
+        Authorization: `Bearer ${conf.inferenceAuthToken}`,
+      },
+    });
     return response;
   };
 
   const setCurrentLLM = async (model: string) => {
+    const ip = await url();
+
     const response = await ofetch<{
       status: string;
       current_llm: string;
       is_loaded: boolean;
-    }>(`${conf.inferenceApiUrl}/llm`, {
+    }>(`${ip}/llm`, {
       method: "PUT",
       body: { name: model },
       headers: {
@@ -69,11 +78,13 @@ export const useInferenceApi = () => {
   };
 
   const setCurrentTTS = async (model: string) => {
+    const ip = await url();
+
     const response = await ofetch<{
       status: string;
       current_tts: string;
       is_loaded: boolean;
-    }>(`${conf.inferenceApiUrl}/tts`, {
+    }>(`${ip}/tts`, {
       method: "PUT",
       body: { name: model },
       headers: {
@@ -84,9 +95,11 @@ export const useInferenceApi = () => {
   };
 
   const listEvents = async () => {
+    const ip = await url();
+
     const response = await ofetch<{
       events: ProcessingRiotEventJob[];
-    }>(`${conf.inferenceApiUrl}/events/list`, {
+    }>(`${ip}/events/list`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${conf.inferenceAuthToken}`,
@@ -96,9 +109,11 @@ export const useInferenceApi = () => {
   };
 
   const resetEvents = async () => {
+    const ip = await url();
+
     const response = await ofetch<{
       status: "success";
-    }>(`${conf.inferenceApiUrl}/events/clear`, {
+    }>(`${ip}/events/clear`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${conf.inferenceAuthToken}`,
