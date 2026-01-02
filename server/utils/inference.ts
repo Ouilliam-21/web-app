@@ -11,10 +11,12 @@ export const useInferenceApi = () => {
 
   const url = async () => {
     const { gpuId } = conf;
-    return await postgres
+    const res = await postgres
       .select({ ip: configTable.ip })
       .from(configTable)
       .where(eq(configTable.id, gpuId));
+
+    return res[0].ip;
   };
 
   const getLLMAvailableModels = async () => {
