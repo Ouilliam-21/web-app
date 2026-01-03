@@ -3,7 +3,7 @@ import { EventEmitter } from "events";
 import { EventSource } from "eventsource";
 
 import { postgres } from "../db";
-import { config as configTable,GPUStatus } from "../db/user/schema";
+import { config as configTable, GPUStatus } from "../db/user/schema";
 
 class SSEManager extends EventEmitter {
   private eventSource: undefined | EventSource = undefined;
@@ -127,6 +127,8 @@ class SSEManager extends EventEmitter {
 let sseManager: Maybe<SSEManager> = undefined;
 
 export const getSSEManager = async () => {
+  if (sseManager) return sseManager;
+
   const conf = useRuntimeConfig();
   const { gpuId, inferenceAuthToken } = conf;
 
@@ -135,11 +137,23 @@ export const getSSEManager = async () => {
     .from(configTable)
     .where(eq(configTable.id, gpuId));
 
-  if (res.ip === "" && res.status !== GPUStatus.RUNNING) {
-    throw new Error("SSE not running");
-  } else if (!sseManager) {
-    const URL = `http://${res.ip}:8000/events/sse/status?token=${inferenceAuthToken}`;
-    sseManager = new SSEManager(URL);
+  if (!res || !res.ip || res.ip.trim() === "") {
+    throw new Error("SSE not available: Invalid or missing IP address");
   }
-  return sseManager;
+
+  if (res.status !== GPUStatus.RUNNING) {
+    throw new Error("SSE not running");
+  }
+
+  if (!res || !res.ip || res.ip.trim() === "") {
+    throw new Error("SSE not available: Invalid or missing IP address");
+  }
+
+  if (!res || !res.ip || res.ip.trim() === "") {
+    throw new Error("SSE not available: Invalid or missing IP address");
+  }
+
+  const URL = `http://${res.ip}:8000/events/sse/status?token=${inferenceAuthToken}`;
+  console.log(URL);
+  sseManager = new SSEManager(URL);
 };
