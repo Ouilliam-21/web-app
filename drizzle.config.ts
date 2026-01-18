@@ -1,8 +1,8 @@
+import * as schema from "@Ouilliam-21/database";
 import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
-  schema: "./server/db/user/schema.ts",
-  out: "./server/db/migrations/prod",
+  schema: schema,
   dialect: "postgresql",
   dbCredentials: {
     ssl: {

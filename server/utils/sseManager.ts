@@ -1,9 +1,9 @@
+import { config as configTable, GPUStatus } from "@Ouilliam-21/database";
 import { eq } from "drizzle-orm";
 import { EventEmitter } from "events";
 import { EventSource } from "eventsource";
 
-import { postgres } from "../db";
-import { config as configTable, GPUStatus } from "../db/user/schema";
+import { postgres } from "../repositories/conn";
 
 class SSEManager extends EventEmitter {
   private eventSource: undefined | EventSource = undefined;

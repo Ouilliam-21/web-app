@@ -1,12 +1,14 @@
 import { ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
-import { eq } from "drizzle-orm";
+import { GPUStatus } from "@Ouilliam-21/database";
 import { ofetch } from "ofetch";
 
-import { postgres } from "../db";
-import { config as configTable,GPUStatus } from "../db/user/schema";
+import { useConfigRepository } from "~~/server/repositories/config";
+
+import type { AppHealth, Database, DropletResponse } from "./types";
 
 export const useDigitalOcean = () => {
   const conf = useRuntimeConfig();
+  const repository = useConfigRepository();
 
   const getDatabaseInfo = async () => {
     const URL =
@@ -86,10 +88,7 @@ export const useDigitalOcean = () => {
 
   const getGPUStatus = async () => {
     const id = conf.gpuId;
-    const config = await postgres
-      .select()
-      .from(configTable)
-      .where(eq(configTable.id, id));
+    const config = await repository.getConfigByGpuId(id);
 
     return {
       status: config[0].status,
@@ -99,10 +98,7 @@ export const useDigitalOcean = () => {
 
   const startGPU = async () => {
     const { gpuId, gpuName, gpuRegion, gpuSize, gpuImage, gpuSshKeys } = conf;
-    await postgres
-      .update(configTable)
-      .set({ status: GPUStatus.STARTING })
-      .where(eq(configTable.id, gpuId));
+    await repository.updateConfigGpuStatus(gpuId, GPUStatus.STARTING);
 
     const URL = "https://api.digitalocean.com/v2/droplets";
     const res = await ofetch<DropletResponse>(URL, {
@@ -144,23 +140,13 @@ export const useDigitalOcean = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
     }
 
-    await postgres
-      .update(configTable)
-      .set({
-        status: GPUStatus.RUNNING,
-        idDroplet: res.droplet.id.toString(),
-        ip: ip,
-      })
-      .where(eq(configTable.id, gpuId));
+    await repository.updateConfig(gpuId, ip, res.droplet.id.toString(), GPUStatus.RUNNING);
   };
 
   const stopGPU = async () => {
     const { gpuId } = conf;
 
-    const res = await postgres
-      .select({ id: configTable.idDroplet })
-      .from(configTable)
-      .where(eq(configTable.id, gpuId));
+    const res = await repository.getConfigByGpuId(gpuId);
 
     const url = "https://api.digitalocean.com/v2/droplets/" + res[0].id;
 
@@ -172,14 +158,7 @@ export const useDigitalOcean = () => {
       },
     });
 
-    await postgres
-      .update(configTable)
-      .set({
-        status: GPUStatus.SHUTDOWN,
-        idDroplet: "",
-        ip: "",
-      })
-      .where(eq(configTable.id, gpuId));
+    await repository.resetConfig(gpuId);
 
     return request;
   };
@@ -194,189 +173,3 @@ export const useDigitalOcean = () => {
     stopGPU,
   };
 };
-
-export interface AppHealth {
-  components: Component[];
-  status: string;
-}
-
-export interface Component {
-  name: string;
-  cpu_usage_percent: number;
-  memory_usage_percent: number;
-  replicas_desired: number;
-  replicas_ready: number;
-  state: string;
-}
-
-export interface Database {
-  id: string;
-  name: string;
-  engine: string;
-  version: string;
-  semantic_version: string;
-  connection: Connection;
-  private_connection: PrivateConnection;
-  metrics_endpoints: MetricsEndpoint[];
-  users: User[];
-  db_names: string[];
-  num_nodes: number;
-  region: string;
-  status: string;
-  created_at: string;
-  maintenance_window: MaintenanceWindow;
-  size: string;
-  tags: undefined;
-  private_network_uuid: string;
-  project_id: string;
-  read_only: boolean;
-  version_end_of_life: string;
-  version_end_of_availability: string;
-  storage_size_mib: number;
-  autoscale: Autoscale;
-}
-
-export interface Connection {
-  protocol: string;
-  uri: string;
-  database: string;
-  host: string;
-  port: number;
-  user: string;
-  ssl: boolean;
-}
-
-export interface PrivateConnection {
-  protocol: string;
-  uri: string;
-  database: string;
-  host: string;
-  port: number;
-  user: string;
-  ssl: boolean;
-}
-
-export interface MetricsEndpoint {
-  host: string;
-  port: number;
-}
-
-export interface User {
-  name: string;
-  role: string;
-}
-
-export interface MaintenanceWindow {
-  day: string;
-  hour: string;
-  pending: boolean;
-}
-
-export interface Autoscale {
-  storage: Storage;
-}
-
-export interface Storage {
-  enabled: boolean;
-  threshold_percent: number;
-  increment_gib: number;
-}
-
-export interface DropletResponse {
-  droplet: Droplet;
-  links: Links;
-}
-
-export interface Droplet {
-  id: number;
-  name: string;
-  memory: number;
-  vcpus: number;
-  disk: number;
-  disk_info: DiskInfo[];
-  locked: boolean;
-  status: string;
-  kernel: any;
-  created_at: string;
-  features: string[];
-  backup_ids: any[];
-  next_backup_window: any;
-  snapshot_ids: any[];
-  image: Image;
-  volume_ids: any[];
-  size: Size2;
-  size_slug: string;
-  networks: Networks;
-  region: Region;
-  tags: string[];
-}
-
-export interface DiskInfo {
-  type: string;
-  size: Size;
-}
-
-export interface Size {
-  amount: number;
-  unit: string;
-}
-
-export interface Image {
-  id: number;
-  name: string;
-  distribution: string;
-  slug: string;
-  public: boolean;
-  regions: string[];
-  created_at: string;
-  type: string;
-  min_disk_size: number;
-  size_gigabytes: number;
-  description: string;
-  tags: any[];
-  status: string;
-  error_message: string;
-}
-
-export interface Size2 {
-  slug: string;
-  memory: number;
-  vcpus: number;
-  disk: number;
-  transfer: number;
-  price_monthly: number;
-  price_hourly: number;
-  regions: string[];
-  available: boolean;
-  description: string;
-}
-
-export interface Networks {
-  v4: V4[];
-  v6: any[];
-}
-
-export interface V4 {
-  ip_address: string;
-  netmask: string;
-  gateway: string;
-  type: string;
-}
-
-export interface Region {
-  name: string;
-  slug: string;
-  features: string[];
-  available: boolean;
-  sizes: string[];
-}
-
-export interface Links {
-  actions: Action[];
-}
-
-export interface Action {
-  id: number;
-  rel: string;
-  href: string;
-}

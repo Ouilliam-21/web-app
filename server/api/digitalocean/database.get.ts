@@ -1,5 +1,6 @@
 import type { DatabaseInfoData } from "#shared/server/digitalocean";
-import { postgres } from "~~/server/db";
+import { useDatabaseRepository } from "~~/server/repositories/database";
+import { useDigitalOcean } from "~~/server/services/digitalocean";
 import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 
 export default useDefineHandler<DatabaseInfoData>(async () => {
@@ -7,9 +8,9 @@ export default useDefineHandler<DatabaseInfoData>(async () => {
 
   const { database } = await getDatabaseInfo();
 
-  const result = await postgres.execute<{
-    pg_size_pretty: string;
-  }>("SELECT pg_size_pretty(pg_database_size(current_database()));");
+  const repository = useDatabaseRepository();
+
+  const result = await repository.getDatabaseInfo();
 
   const pretty = result.rows[0]!.pg_size_pretty;
   const match = pretty.match(/([\d.]+)\s*(\w+)/);

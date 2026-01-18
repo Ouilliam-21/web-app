@@ -18,12 +18,13 @@ import type { ProcessingRiotEventJob } from "~~/shared/sse/inference/type";
 
 import Menu from "./Menu.vue";
 
-const { data: events } = useFetch("/api/inference/list");
+//const { data: events } = useFetch("/api/inference/list");
 
 const autoScroll = ref(true);
 const store = useMessagesStore();
 
 const status = ref(false);
+const events = ref()
 
 if (events.value?.type === "success") {
   events.value.data.events.forEach((evt) => store.addMessage(evt));

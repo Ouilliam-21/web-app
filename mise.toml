@@ -1,6 +1,13 @@
 [tools]
 node = "22.18.0"
 
+[env]
+_.file = '.env'
+
+[tasks.install]
+description = "Install package"
+run = "pnpm install"
+
 [tasks.build]
 description = "Build the nuxt application"
 run = "pnpm run build"
@@ -28,11 +35,3 @@ run = "act -W .github/workflows/validate.yml"
 [tasks.act_preview]
 description = "Run the github action preview locally"
 run = "act --secret-file .act.env -W .github/workflows/preview.yml"
-
-[tasks.drizzle-generate-prod]
-description = "Generate drizzle migration for prod database"
-run = "pnpm drizzle-kit generate --config=drizzle-prod.config.ts"
-
-[tasks.drizzle-migrate-prod]
-description = "Run migration for prod database"
-run = "pnpm drizzle-kit migrate --config=drizzle-prod.config.ts"

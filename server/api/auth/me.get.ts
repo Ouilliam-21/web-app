@@ -1,26 +1,23 @@
-import { eq } from "drizzle-orm";
 import { getCookie } from "h3";
 
 import type { User } from "#shared/db/user";
 import { isAbsent } from "#shared/utils/optional";
+import { useDiscord } from "~~/server/services/discord";
 import {
   apiError,
   apiSuccess,
   useDefineHandler,
 } from "~~/server/utils/handler";
 
-import { postgres } from "../../db";
-import { users as usersTable } from "../../db/user/schema";
+import { useUserRepository } from "../../../server/repositories/user";
 
 export default useDefineHandler<User>(async (event) => {
   const id = getCookie(event, "auth") ?? "";
 
   const discord = useDiscord();
+  const userRepository = useUserRepository()
 
-  const [user] = await postgres
-    .select()
-    .from(usersTable)
-    .where(eq(usersTable.discordId, id));
+  const [user] = await userRepository.getUserByDiscordId(id);
 
   if (isAbsent(user))
     return apiError({
@@ -39,16 +36,7 @@ export default useDefineHandler<User>(async (event) => {
   if (user.expireAt < new Date().getTime()) {
     const tokens = await discord.refreshToken(user.refreshToken);
 
-    await postgres
-      .update(usersTable)
-      .set({
-        tokenType: tokens.token_type,
-        accessToken: tokens.access_token,
-        expireAt: new Date().getTime() + tokens.expires_in,
-        refreshToken: tokens.refresh_token,
-        scope: tokens.scope,
-      })
-      .where(eq(usersTable.id, user.id));
+    await userRepository.updateUserToken(user.discordId, tokens);
   }
 
   return apiSuccess({

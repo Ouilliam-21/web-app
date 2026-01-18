@@ -1,14 +1,14 @@
-import { and, desc,eq, lt, or } from "drizzle-orm";
+/* import {
+  type ProcessingJob,
+  processingRiotEventsJobs as processingRiotEventsJobsTable,
+  ProcessingRiotEventStatus,
+} from "@Ouilliam-21/database";
+import { and, desc, eq, lt, or } from "drizzle-orm";
 
 import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 import type { ProcessingRiotEventJob } from "~~/shared/sse/inference/type";
 
-import { postgres } from "../../db";
-import {
-  type ProcessingJob,
-  processingRiotEventsJobs as processingRiotEventsJobsTable,
-  ProcessingRiotEventStatus,
-} from "../../db/user/schema";
+import { postgres } from "../../repositories/conn";
 
 const mapProcessingJobToProcessingRiotEventJob = (
   job: ProcessingJob
@@ -72,3 +72,4 @@ export default useDefineHandler<{
     hasMore,
   });
 });
+ */

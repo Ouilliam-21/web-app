@@ -1,24 +1,27 @@
-import { eq } from "drizzle-orm";
 import { setCookie } from "h3";
 
-import { useDiscord } from "~~/server/utils/discord";
-
-import { postgres } from "../../../db";
-import { users as usersTable } from "../../../db/user/schema";
+import { useUserRepository } from "~~/server/repositories/user";
+import { type Token, useDiscord } from "~~/server/services/discord";
 
 export default defineEventHandler(async (event) => {
   const { code } = getQuery<{ code: string }>(event);
 
   const { getAccessToken, getUserInfo } = useDiscord();
+  const {getUserByDiscordId, createUser,updateUserToken} = useUserRepository();
 
   const tokens = await getAccessToken(code);
 
   const user = await getUserInfo(tokens.access_token);
 
-  const [exist] = await postgres
-    .select()
-    .from(usersTable)
-    .where(eq(usersTable.discordId, user.id));
+  const [exist] = await getUserByDiscordId(user.id);
+
+  const token: Token = {
+    token_type: tokens.token_type,
+    access_token: tokens.access_token,
+    expires_in: tokens.expires_in,
+    refresh_token: tokens.refresh_token,
+    scope: tokens.scope,
+  };
 
   const values = {
     tokenType: tokens.token_type,
@@ -35,12 +38,9 @@ export default defineEventHandler(async (event) => {
   };
 
   if (isAbsent(exist)) {
-    await postgres.insert(usersTable).values(values);
+    await createUser(values);
   } else {
-    await postgres
-      .update(usersTable)
-      .set(values)
-      .where(eq(usersTable.discordId, user.id));
+    await updateUserToken(user.id, token);
   }
 
   setCookie(event, "auth", user.id);

@@ -1,1 +1,0 @@
-ALTER TABLE "users" RENAME COLUMN "expires_in" TO "expire_at";

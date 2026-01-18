@@ -1,5 +1,5 @@
+import { useLLM } from "~~/server/services/inference";
 import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
-import { useInferenceApi } from "~~/server/utils/inference";
 
 export default useDefineHandler<{
   status: string;
@@ -16,7 +16,7 @@ export default useDefineHandler<{
     });
   }
 
-  const { setCurrentLLM } = useInferenceApi();
-  const setCurrentLLMResponse = await setCurrentLLM(body.name);
+  const { setLLM } = useLLM();
+  const setCurrentLLMResponse = await setLLM(body.name);
   return apiSuccess(setCurrentLLMResponse);
 });

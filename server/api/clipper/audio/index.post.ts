@@ -1,11 +1,11 @@
-import { promises as fs } from "fs";
+/* import { promises as fs } from "fs";
 import { ofetch } from "ofetch";
 import { join } from "path";
 
 import type { ClipCreatedData } from "~~/shared/sse/clipper/types";
 
-import { db } from "../../../db";
 import { clips } from "../../../db/clipper/schema";
+import { db } from "../../../repositories/conn";
 import { clipHub } from "../events.get";
 
 const toLanguage = (language: string) =>
@@ -70,3 +70,4 @@ export default defineEventHandler(async (event) => {
 
   return clip;
 });
+ */

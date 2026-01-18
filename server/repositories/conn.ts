@@ -1,12 +1,5 @@
-import Database from "better-sqlite3";
-import { drizzle as drizzleSqlite } from "drizzle-orm/better-sqlite3";
 import { drizzle as drizzlePostgres } from "drizzle-orm/node-postgres";
 
-import * as schema from "./clipper/schema";
-
-const sqlite = new Database("sqlite.db");
-
-export const db = drizzleSqlite(sqlite, { schema });
 export const postgres = drizzlePostgres({
   connection: {
     ssl: {

@@ -5,7 +5,7 @@ import { computed,ref } from "vue";
 
 import { Button } from "@/components/ui/button";
 import { useFetch } from "#app";
-import { GPUStatus } from "~~/server/db/user/schema";
+import { GPUStatus } from "@Ouilliam-21/database";
 
 const { status, ip } = defineProps<{
   status: GPUStatus;

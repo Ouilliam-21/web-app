@@ -1,10 +1,10 @@
+import { useEvents } from "~~/server/services/inference";
 import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
-import { useInferenceApi } from "~~/server/utils/inference";
 import type { ProcessingRiotEventJob } from "~~/shared/sse/inference/type";
 
 export default useDefineHandler<{ events: ProcessingRiotEventJob[] }>(
   async () => {
-    const { listEvents } = useInferenceApi();
+    const { listEvents } = useEvents();
     return apiSuccess(await listEvents());
   }
 );

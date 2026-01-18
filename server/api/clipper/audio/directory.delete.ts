@@ -1,11 +1,11 @@
 import { eq } from "drizzle-orm";
 import { promises as fs } from "fs";
 
-import { db } from "../../../db";
 import { clips as clipsTable } from "../../../db/clipper/schema";
+import { db } from "../../../repositories/conn";
 import { clipHub } from "../events.get";
 
-export default defineEventHandler(async (event) => {
+/* export default defineEventHandler(async (event) => {
   const { language } = getQuery<{ language: string }>(event);
 
   if (!language) {
@@ -29,4 +29,4 @@ export default defineEventHandler(async (event) => {
   return {
     success: true,
   };
-});
+}); */

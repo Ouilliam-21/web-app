@@ -1,5 +1,5 @@
-import { db } from "../../../db";
-import { clips as clipsTable } from "../../../db/clipper/schema";
+/* import { clips as clipsTable } from "../../../db/clipper/schema";
+import { db } from "../../../repositories/conn";
 
 export default defineEventHandler(async () => {
   return await db
@@ -12,3 +12,4 @@ export default defineEventHandler(async () => {
       }))
     );
 });
+ */

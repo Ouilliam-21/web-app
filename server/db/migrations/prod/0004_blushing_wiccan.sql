@@ -1,1 +1,0 @@
-ALTER TABLE "users" ALTER COLUMN "expire_at" SET DATA TYPE bigint;

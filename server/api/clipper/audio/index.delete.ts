@@ -1,8 +1,8 @@
-import { eq } from "drizzle-orm";
+/* import { eq } from "drizzle-orm";
 import { promises as fs } from "fs";
 
-import { db } from "../../../db";
 import { clips } from "../../../db/clipper/schema";
+import { db } from "../../../repositories/conn";
 import { clipHub } from "../events.get";
 
 export default defineEventHandler(async (event) => {
@@ -34,3 +34,4 @@ export default defineEventHandler(async (event) => {
     success: true,
   };
 });
+ */

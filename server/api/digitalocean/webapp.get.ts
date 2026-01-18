@@ -1,5 +1,6 @@
 import type { WebAppHealthData } from "#shared/server/digitalocean";
 import { isAbsent } from "#shared/utils/optional";
+import { useDigitalOcean } from "~~/server/services/digitalocean";
 import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 
 export default useDefineHandler<WebAppHealthData>(async () => {

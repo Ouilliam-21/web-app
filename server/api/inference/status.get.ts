@@ -1,18 +1,14 @@
-import { eq } from "drizzle-orm";
+import { GPUStatus } from "@Ouilliam-21/database";
 
+import { useConfigRepository } from "~~/server/repositories/config";
 import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
-
-import { postgres } from "../../db";
-import { config as configTable, GPUStatus } from "../../db/user/schema";
 
 export default useDefineHandler<{ status: GPUStatus }>(async () => {
   const conf = useRuntimeConfig();
+  const repository = useConfigRepository()
   const { gpuId } = conf;
 
-  const [res] = await postgres
-    .select({ status: configTable.status })
-    .from(configTable)
-    .where(eq(configTable.id, gpuId));
+  const [res] = await repository.getConfigByGpuId(gpuId)
 
   return apiSuccess({ status: res.status });
 });
