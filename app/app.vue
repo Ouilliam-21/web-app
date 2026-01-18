@@ -1,8 +1,11 @@
 <script setup lang="ts">
-// You might choose this based on an API call or logged-in status
+import 'vue-sonner/style.css'
+
+import { Toaster } from 'vue-sonner'
 </script>
 
 <template>
+  <Toaster />
   <NuxtLayout name="default">
     <NuxtPage />
   </NuxtLayout>

@@ -1,4 +1,5 @@
 import type { SpaceInfoData } from "#shared/server/digitalocean";
+import { useDigitalOcean } from "~~/server/services/digitalocean";
 import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 
 export default useDefineHandler<SpaceInfoData>(async () => {
@@ -10,9 +11,8 @@ export default useDefineHandler<SpaceInfoData>(async () => {
   const percentUsage = (totalGB / MAX_GB) * 100;
 
   return apiSuccess({
-    name: "Object storage",
     totalBytes: totalSizeBytes,
-    totalMB: totalSizeBytes / 1024 ** 2,
+    totalMB: (totalSizeBytes / 1024 ** 2).toFixed(2),
     totalGB,
     percentUsage: percentUsage.toFixed(2),
   });

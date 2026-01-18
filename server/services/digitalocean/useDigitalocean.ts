@@ -88,11 +88,11 @@ export const useDigitalOcean = () => {
 
   const getGPUStatus = async () => {
     const id = conf.gpuId;
-    const config = await repository.getConfigByGpuId(id);
+    const [config] = await repository.getConfigByGpuId(id);
 
     return {
-      status: config[0].status,
-      ip: config[0].ip ?? "",
+      status: config.status,
+      ip: config.ip ?? "",
     };
   };
 
@@ -141,14 +141,19 @@ export const useDigitalOcean = () => {
     }
 
     await repository.updateConfig(gpuId, ip, res.droplet.id.toString(), GPUStatus.RUNNING);
+
+    return {
+      ip: ip,
+      dropletId: res.droplet.id.toString()
+    }
   };
 
   const stopGPU = async () => {
     const { gpuId } = conf;
 
-    const res = await repository.getConfigByGpuId(gpuId);
+    const [res] = await repository.getConfigByGpuId(gpuId);
 
-    const url = "https://api.digitalocean.com/v2/droplets/" + res[0].id;
+    const url = "https://api.digitalocean.com/v2/droplets/" + res.idDroplet;
 
     const request = await ofetch(url, {
       method: "DELETE",

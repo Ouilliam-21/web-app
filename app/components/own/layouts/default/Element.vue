@@ -30,11 +30,10 @@ const icon = computed(() => {
     :class="[
       ' group cursor-pointer flex items-center justify-center w-12 h-12 rounded-full transition-colors',
       isActivePage
-        ? 'bg-secondary-200 hover:bg-secondary-200'
-        : 'hover:bg-secondary-100',
+        ? 'bg-secondary-200 dark:bg-dark-secondary-300 hover:bg-secondary-200'
+        : 'hover:bg-secondary-100 hover:dark:bg-dark-secondary-300',
     ]"
   >
-    <!-- Custom SVG slot takes priority - classes are passed via scoped slot -->
     <slot v-if="name === undefined" />
     <component v-else :is="icon" />
   </NuxtLink>

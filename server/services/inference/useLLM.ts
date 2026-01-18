@@ -8,15 +8,15 @@ export const useLLM = () => {
     const conf = useRuntimeConfig();
 
     const setLLM = async (model: string) => {
-        const ip = await repository.getConfigByGpuId(conf.gpuId)
+        const [config] = await repository.getConfigByGpuId(conf.gpuId)
 
         const response = await ofetch<{
             status: string;
             current_llm: string;
             is_loaded: boolean;
-        }>(`http://${ip}:8000/llm`, {
+        }>(`http://${config.ip}:8000/llm/switch`, {
             method: "PUT",
-            body: { name: model },
+            body: { model_name: model },
             headers: {
                 Authorization: `Bearer ${conf.inferenceAuthToken}`,
             },
@@ -25,10 +25,10 @@ export const useLLM = () => {
     };
 
     const getCurrentLLM = async () => {
-        const ip = await repository.getConfigByGpuId(conf.gpuId)
+        const [config] = await repository.getConfigByGpuId(conf.gpuId)
 
-        const response = await ofetch<{ current_llm: string }>(
-            `http://${ip}:8000/llm`,
+        const response = await ofetch<{ current_model: string }>(
+            `http://${config.ip}:8000/llm`,
             {
                 headers: {
                     Authorization: `Bearer ${conf.inferenceAuthToken}`,
@@ -39,9 +39,9 @@ export const useLLM = () => {
     };
 
     const getLLMAvailableModels = async () => {
-        const ip = await repository.getConfigByGpuId(conf.gpuId)
-        const response = await ofetch<{ llm: string[] }>(
-            `http://${ip}:8000/llm/list`,
+        const [config] = await repository.getConfigByGpuId(conf.gpuId)
+        const response = await ofetch<{ models: string[] }>(
+            `http://${config.ip}:8000/llm/list`,
             {
                 headers: {
                     Authorization: `Bearer ${conf.inferenceAuthToken}`,

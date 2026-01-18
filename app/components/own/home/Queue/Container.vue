@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMessagesStore } from "@/stores/message";
-import { useFetch } from "#app";
 import { useSSE } from "~/composables/useSSE";
 import type { ProcessingRiotEventJob } from "~~/shared/sse/inference/type";
 

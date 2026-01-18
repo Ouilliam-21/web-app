@@ -14,9 +14,8 @@ export type DatabaseInfoData = {
 };
 
 export type SpaceInfoData = {
-  name: string;
   totalBytes: number;
-  totalMB: number;
+  totalMB: string;
   totalGB: number;
   percentUsage: string;
 };

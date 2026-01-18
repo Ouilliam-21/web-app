@@ -1,8 +1,9 @@
 import { useTTS } from "~~/server/services/inference";
 import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 
-export default useDefineHandler<{ current_tts: string }>(async () => {
+export default useDefineHandler<{ active: string }>(async () => {
   const { getCurrentTTS } = useTTS();
   const currentTTS = await getCurrentTTS();
-  return apiSuccess(currentTTS);
+  console.log(currentTTS)
+  return apiSuccess({active: currentTTS.current_model});
 });

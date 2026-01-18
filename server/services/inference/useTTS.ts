@@ -7,10 +7,10 @@ export const useTTS = () => {
     const repository = useConfigRepository()
 
     const getTTSAvailableModels = async () => {
-        const ip = await repository.getConfigByGpuId(conf.gpuId)
+        const [config] = await repository.getConfigByGpuId(conf.gpuId)
 
-        const response = await ofetch<{ tts: string[] }>(
-            `http://${ip}:8000/tts/list`,
+        const response = await ofetch<{ models: string[] }>(
+            `http://${config.ip}:8000/tts/list`,
             {
                 headers: {
                     Authorization: `Bearer ${conf.inferenceAuthToken}`,
@@ -23,10 +23,10 @@ export const useTTS = () => {
 
 
     const getCurrentTTS = async () => {
-        const ip = await repository.getConfigByGpuId(conf.gpuId)
+        const [config] = await repository.getConfigByGpuId(conf.gpuId)
 
-        const response = await ofetch<{ current_tts: string }>(
-            `http://${ip}:8000/tts`,
+        const response = await ofetch<{ current_model: string }>(
+            `http://${config.ip}:8000/tts`,
             {
                 headers: {
                     Authorization: `Bearer ${conf.inferenceAuthToken}`,
@@ -39,19 +39,20 @@ export const useTTS = () => {
 
 
     const setCurrentTTS = async (model: string) => {
-        const ip = await repository.getConfigByGpuId(conf.gpuId)
+        const [config] = await repository.getConfigByGpuId(conf.gpuId)
 
         const response = await ofetch<{
             status: string;
             current_tts: string;
             is_loaded: boolean;
-        }>(`http://${ip}:8000/tts`, {
+        }>(`http://${config.ip}:8000/tts`, {
             method: "PUT",
             body: { name: model },
             headers: {
                 Authorization: `Bearer ${conf.inferenceAuthToken}`,
             },
         });
+        
         return response;
     };
 

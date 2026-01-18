@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import "vue-sonner/style.css";
-
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { useUserService } from "~/services/user";
 

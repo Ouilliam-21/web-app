@@ -1,7 +1,7 @@
 import { users as usersTable } from "@Ouilliam-21/database"
 import { eq } from "drizzle-orm";
 
-import { Token } from "~~/server/services/discord";
+import type { Token } from "~~/server/services/discord";
 
 import { postgres as db } from "../conn";
 

@@ -4,7 +4,6 @@ import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 
 import { useUserRepository } from "../../repositories/user";
 
-
 export default useDefineHandler<Array<User & { expireAt: number }>>(
   async (event) => {
     const discordId = getQuery<{ discordId?: string }>(event);

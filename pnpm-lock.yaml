@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@Ouilliam-21/database':
-    specifier: file:../database
-    version: file:../database(@types/pg@8.15.6)(typescript@5.9.3)
+    specifier: ^1.0.0
+    version: 1.0.0(@types/pg@8.15.6)(typescript@5.9.3)
   '@aws-sdk/client-s3':
     specifier: ^3.948.0
     version: 3.948.0
@@ -120,6 +120,47 @@ devDependencies:
     version: 8.48.0(eslint@9.39.1)(typescript@5.9.3)
 
 packages:
+
+  /@Ouilliam-21/database@1.0.0(@types/pg@8.15.6)(typescript@5.9.3):
+    resolution: {integrity: sha512-lj+ykAOc/1PS6JnvofAfv7AS0ZN3uTDcHAShM+EtMv9vLv+4kCvrv90rs5odiWqLiTrQlVwVy2L7hipjO+9b9Q==, tarball: https://npm.pkg.github.com/download/@Ouilliam-21/database/1.0.0/888961fbbc4382160a9a8f1e9df6ef787a30e9a3}
+    peerDependencies:
+      typescript: ^5
+    dependencies:
+      dotenv: 17.2.3
+      drizzle-orm: 0.45.1(@types/pg@8.15.6)(pg@8.16.3)
+      pg: 8.16.3
+      typescript: 5.9.3
+    transitivePeerDependencies:
+      - '@aws-sdk/client-rds-data'
+      - '@cloudflare/workers-types'
+      - '@electric-sql/pglite'
+      - '@libsql/client'
+      - '@libsql/client-wasm'
+      - '@neondatabase/serverless'
+      - '@op-engineering/op-sqlite'
+      - '@opentelemetry/api'
+      - '@planetscale/database'
+      - '@prisma/client'
+      - '@tidbcloud/serverless'
+      - '@types/better-sqlite3'
+      - '@types/pg'
+      - '@types/sql.js'
+      - '@upstash/redis'
+      - '@vercel/postgres'
+      - '@xata.io/client'
+      - better-sqlite3
+      - bun-types
+      - expo-sqlite
+      - gel
+      - knex
+      - kysely
+      - mysql2
+      - pg-native
+      - postgres
+      - prisma
+      - sql.js
+      - sqlite3
+    dev: false
 
   /@alloc/quick-lru@5.2.0:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -8803,47 +8844,4 @@ packages:
       archiver-utils: 5.0.2
       compress-commons: 6.0.2
       readable-stream: 4.7.0
-    dev: false
-
-  file:../database(@types/pg@8.15.6)(typescript@5.9.3):
-    resolution: {directory: ../database, type: directory}
-    id: file:../database
-    name: '@Ouilliam-21/database'
-    peerDependencies:
-      typescript: ^5
-    dependencies:
-      dotenv: 17.2.3
-      drizzle-orm: 0.45.1(@types/pg@8.15.6)(pg@8.16.3)
-      pg: 8.16.3
-      typescript: 5.9.3
-    transitivePeerDependencies:
-      - '@aws-sdk/client-rds-data'
-      - '@cloudflare/workers-types'
-      - '@electric-sql/pglite'
-      - '@libsql/client'
-      - '@libsql/client-wasm'
-      - '@neondatabase/serverless'
-      - '@op-engineering/op-sqlite'
-      - '@opentelemetry/api'
-      - '@planetscale/database'
-      - '@prisma/client'
-      - '@tidbcloud/serverless'
-      - '@types/better-sqlite3'
-      - '@types/pg'
-      - '@types/sql.js'
-      - '@upstash/redis'
-      - '@vercel/postgres'
-      - '@xata.io/client'
-      - better-sqlite3
-      - bun-types
-      - expo-sqlite
-      - gel
-      - knex
-      - kysely
-      - mysql2
-      - pg-native
-      - postgres
-      - prisma
-      - sql.js
-      - sqlite3
     dev: false

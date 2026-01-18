@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { Settings } from "lucide-vue-next";
-import { Sparkles } from "lucide-vue-next";
 
 import Dialog from "@/components/own/home/Header/Dialog.vue";
 import { Button } from "@/components/ui/button";
@@ -36,10 +35,6 @@ import { Button } from "@/components/ui/button";
         <Settings />
       </Button>
       <Dialog />
-      <Button size="sm" class="cursor-pointer  bg-primary-100 hover:bg-primary-200 dark:text-white transition-colors">
-        New Chat
-        <Sparkles />
-      </Button>
     </div>
   </div>
 </template>

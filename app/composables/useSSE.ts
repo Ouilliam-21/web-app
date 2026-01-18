@@ -1,4 +1,5 @@
 import { GPUStatus } from "@Ouilliam-21/database";
+
 import type { ProcessingRiotEventJob } from "~~/shared/sse/inference/type";
 
 export const useSSE = (callbacks: {
