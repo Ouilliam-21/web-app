@@ -34,7 +34,7 @@
     <div v-else-if="status === 'success' && response?.type === 'success'" class="flex items-center justify-between">
       <div class="flex flex-col">
         <div class="flex gap-1.5 items-center">
-          <span class="font-medium">{{ response.data.name }}</span>
+          <span class="font-medium">Object storage</span>
           <span class="size-3 rounded-full animate-pulse bg-green-500"></span>
         </div>
       </div>

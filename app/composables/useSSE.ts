@@ -1,32 +1,20 @@
-import { GPUStatus } from "@Ouilliam-21/database";
-
 import type { ProcessingRiotEventJob } from "~~/shared/sse/inference/type";
 
-export const useSSE = (callbacks: {
+export const useSSE = (endpoint: string, callbacks: {
   onMessage: (data: ProcessingRiotEventJob) => void;
+  onError: (evt: Event) => void
 }) => {
-  const state = useState("sse-state", () => ({
-    connected: false,
-    connecting: false,
-    error: null as string | null,
-    retryCount: 0,
-    maxRetries: 5,
-  }));
 
-  let eventSource: Maybe<EventSource> = null;
+  let eventSource: Maybe<EventSource> = undefined;
 
-  const startListening = async () => {
-    const { data: status } = await useFetch("/api/inference/status");
+  const startListening = () => {
 
-    if (status.value?.type === "success") {
-      if (status.value.data.status !== GPUStatus.RUNNING) {
-        throw new Error("SSE not available");
-      }
+    if (isPresent(eventSource)) {
+      console.warn('[SSE] Already connected');
+      return;
     }
 
-    if (eventSource) return;
-
-    eventSource = new EventSource("/api/inference/stream");
+    eventSource = new EventSource(endpoint);
 
     eventSource.onmessage = (event) => {
       try {
@@ -37,13 +25,21 @@ export const useSSE = (callbacks: {
       }
     };
 
-    eventSource.onerror = () => {
-      state.value.error = "Stream connection lost";
-    };
+    eventSource.onerror = (event) => callbacks.onError(event);
   };
 
-  return {
-    state,
-    startListening,
+  const stopListening = () => {
+    if (isPresent(eventSource)) {
+      eventSource.close();
+      eventSource = undefined;
+    }
   };
+
+  onMounted(() => {
+    startListening();
+  });
+
+  onUnmounted(() => {
+    stopListening();
+  });
 };

@@ -8,11 +8,11 @@ export const useEvents = () => {
     const conf = useRuntimeConfig();
 
     const listEvents = async () => {
-        const ip = await repository.getConfigByGpuId(conf.gpuId)
+        const [config] = await repository.getConfigByGpuId(conf.gpuId)
 
         const response = await ofetch<{
             events: ProcessingRiotEventJob[];
-        }>(`http://${ip}:8000/events/list`, {
+        }>(`http://${config.ip}:8000/events/list`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${conf.inferenceAuthToken}`,
@@ -22,12 +22,12 @@ export const useEvents = () => {
     };
 
     const resetEvents = async () => {
-        const ip = await repository.getConfigByGpuId(conf.gpuId)
+        const [config] = await repository.getConfigByGpuId(conf.gpuId)
 
         const response = await ofetch<{
             status: "success";
-        }>(`http://${ip}:8000/events/clear`, {
-            method: "GET",
+        }>(`http://${config.ip}:8000/events/clear`, {
+            method: "PUT",
             headers: {
                 Authorization: `Bearer ${conf.inferenceAuthToken}`,
             },

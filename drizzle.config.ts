@@ -5,9 +5,7 @@ export default defineConfig({
   schema: schema,
   dialect: "postgresql",
   dbCredentials: {
-    ssl: {
-      rejectUnauthorized: false,
-    },
+    ssl: false,
     host: process.env.DATABASE_HOST,
     port: process.env.DATABASE_PORT,
     user: process.env.DATABASE_USER,

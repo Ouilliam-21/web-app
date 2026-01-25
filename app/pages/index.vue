@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChatBox } from "~/components/own/home/ChatBox";
+import { EventsContainer } from "~/components/own/home/Events";
 import { Header } from "~/components/own/home/Header";
 import { Queue } from "~/components/own/home/Queue";
 </script>
@@ -9,7 +9,7 @@ import { Queue } from "~/components/own/home/Queue";
     >
         <Header />
         <div class="grid grid-cols-[1fr_0.25fr] h-full min-h-0 gap-3">
-            <ChatBox />
+            <EventsContainer />
             <Queue class="h-full" />
         </div>
     </main>

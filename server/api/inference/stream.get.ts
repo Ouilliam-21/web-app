@@ -1,23 +1,40 @@
-import { defineEventHandler, setResponseHeader } from "h3";
+import { GPUStatus } from "@Ouilliam-21/database";
+import { EventSource } from "eventsource";
+import { defineEventHandler } from "h3";
 
-import { getSSEManager } from "~~/server/utils/sseManager";
+import { useConfigRepository } from "~~/server/repositories/config";
 
 export default defineEventHandler(async (event) => {
-  try {
-    const sseManager = await getSSEManager();
 
-    await sseManager.connect();
+  const conf = useRuntimeConfig();
+  const repository = useConfigRepository()
 
-    setResponseHeader(event, "Content-Type", "text/event-stream");
-    setResponseHeader(event, "Cache-Control", "no-cache");
-    setResponseHeader(event, "Connection", "keep-alive");
+  const [res] = await repository.getConfigByGpuId(conf.gpuId)
 
-    const stream = createEventStream(event);
-
-    sseManager.on("processing-job-status", (data) => stream.push(data));
-
-    return stream.send();
-  } catch (error) {
-    return { message: "can't connect to the SSE" };
+  if (!res || !res.ip || res.ip.trim() === "") {
+    throw new Error("SSE not available: Invalid or missing IP address");
   }
+
+  if (res.status !== GPUStatus.RUNNING) {
+    throw new Error("SSE not running");
+  }
+
+  const url = `http://${res.ip}:8000/events/sse?token=${conf.inferenceAuthToken}`;
+
+  setResponseHeaders(event, {
+    "Content-Type": "text/event-stream",
+    "Cache-Control": "no-cache, no-transform",
+    "Connection": "keep-alive",
+    "X-Accel-Buffering": "no",
+  });
+
+  const stream = createEventStream(event);
+
+  const eventSource = new EventSource(url);
+
+  eventSource.addEventListener("event_status", (event: MessageEvent) =>
+    stream.push(event)
+  );
+
+  return stream.send();
 });

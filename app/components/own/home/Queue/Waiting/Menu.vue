@@ -2,6 +2,7 @@
 import { Ellipsis } from "lucide-vue-next";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +11,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Label } from '@/components/ui/label'
+import {useToast} from "@/composables/useToast"
 import { useMessagesStore } from "@/stores/message";
 import { useFetch } from "#app";
 
@@ -17,9 +20,21 @@ const autoScroll = defineModel<boolean>("autoScroll", { required: true });
 
 const store = useMessagesStore();
 
+const { error: showError, success: showSuccess } = useToast();
+
 const onReset = async () => {
-  await useFetch("/api/inference/reset");
-  store.clear();
+  const { error: err } = await useFetch("/api/inference/reset");
+  
+  if (err.value) {
+    showError("Failed to reset", {
+      description: err.value.message || "An error occurred while resetting"
+    });
+  } else {
+    store.clear();
+    showSuccess("Reset successful", {
+      description: "All messages have been cleared"
+    });
+  }
 };
 </script>
 
@@ -35,8 +50,8 @@ const onReset = async () => {
       <DropdownMenuGroup>
         <DropdownMenuItem>
           <div class="flex items-center space-x-2">
-            <Switch id="airplane-mode" v-model:model-value="autoScroll" />
             <Label for="airplane-mode">Auto scroll</Label>
+            <Checkbox id="terms" v-model:model-value="autoScroll"/>
           </div>
         </DropdownMenuItem>
         <DropdownMenuItem>

@@ -2,14 +2,16 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { useUserService } from "~/services/user";
 
-import Dialog from "./Loggin/Container.vue";
+import EventDialog from "./Dialogs/Event.vue";
+import LoginDialog from "./Dialogs/Login.vue";
 import { Bot, Clipper, Rounds, Settings, Theme, Video } from "./Sections";
 const { isAuthenticated, userAvatar, userDecoration } = useUserService();
 </script>
 
 <template>
   <div class="grid grid-cols-[auto_1fr] h-screen overflow-hidden">
-    <Dialog v-if="!isAuthenticated" />
+    <LoginDialog v-if="!isAuthenticated" />
+    <EventDialog />
 
     <div class="bg-secondary">
       <div class="grid grid-rows-[auto_1fr_auto] h-full">
