@@ -9,11 +9,17 @@ export default defineEventHandler(async (event) => {
   const { getAccessToken, getUserInfo } = useDiscord();
   const {getUserByDiscordId, createUser,updateUserToken} = useUserRepository();
 
-  const tokens = await getAccessToken(code);
+  const tokensResult = await getAccessToken(code);
+  if (tokensResult.isErr()) throw tokensResult.error;
+  const tokens = tokensResult.value;
 
-  const user = await getUserInfo(tokens.access_token);
+  const userResult = await getUserInfo(tokens.access_token);
+  if (userResult.isErr()) throw userResult.error;
+  const user = userResult.value;
 
   const existResult = await getUserByDiscordId(user.id);
+  if (existResult.isErr()) throw existResult.error;
+  const [exist] = existResult.value;
 
   const token: Token = {
     token_type: tokens.token_type,
@@ -36,9 +42,6 @@ export default defineEventHandler(async (event) => {
     decorationAsset: user.avatar_decoration_data.asset,
     decorationSkuId: user.avatar_decoration_data.sku_id,
   };
-
-  if (existResult.isErr()) throw existResult.error;
-  const [exist] = existResult.value;
 
   if (isAbsent(exist)) {
     const createResult = await createUser(values);
