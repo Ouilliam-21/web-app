@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Typecheck
+      - name: Linter
         run: mise run lint
 
   typecheck:
