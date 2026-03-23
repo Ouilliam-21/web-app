@@ -36,9 +36,11 @@ export default useDefineHandler<User>(async (event) => {
         });
 
       if (user.expireAt < new Date().getTime()) {
-        const tokens = await discord.refreshToken(user.refreshToken);
+        const tokensResult = await discord.refreshToken(user.refreshToken);
+        if (tokensResult.isErr())
+          return apiError({ status: 500, title: "Internal Server Error", detail: tokensResult.error.message });
 
-        const updateResult = await userRepository.updateUserToken(user.discordId, tokens);
+        const updateResult = await userRepository.updateUserToken(user.discordId, tokensResult.value);
         if (updateResult.isErr())
           return apiError({ status: 500, title: "Internal Server Error", detail: updateResult.error.message });
       }
