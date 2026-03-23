@@ -37,18 +37,16 @@ export default defineEventHandler(async (event) => {
     decorationSkuId: user.avatar_decoration_data.sku_id,
   };
 
-  await existResult.match(
-    async ([exist]) => {
-      if (isAbsent(exist)) {
-        const createResult = await createUser(values);
-        if (createResult.isErr()) throw createResult.error;
-      } else {
-        const updateResult = await updateUserToken(user.id, token);
-        if (updateResult.isErr()) throw updateResult.error;
-      }
-    },
-    (err) => Promise.reject(err)
-  );
+  if (existResult.isErr()) throw existResult.error;
+  const [exist] = existResult.value;
+
+  if (isAbsent(exist)) {
+    const createResult = await createUser(values);
+    if (createResult.isErr()) throw createResult.error;
+  } else {
+    const updateResult = await updateUserToken(user.id, token);
+    if (updateResult.isErr()) throw updateResult.error;
+  }
 
   setCookie(event, "auth", user.id);
 
