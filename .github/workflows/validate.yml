@@ -8,6 +8,9 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+  
+env:
+  OUI_LLIAM_NPM_GITHUB_TOKEN: ${{ secrets.OUI_LLIAM_NPM_GITHUB_TOKEN }}
 
 jobs:
   lint:
