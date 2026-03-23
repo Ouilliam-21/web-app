@@ -1,11 +1,12 @@
 import { processingRiotEventsJobs as eventsTable } from "@Ouilliam-21/database"
 import { and, desc,eq, lt, or } from "drizzle-orm";
+import { ResultAsync } from "neverthrow";
 
 import { postgres as db } from "../conn";
 
 export const useEventsRepository = () => {
     const LIMIT = 10
-    const getLastEventsFrom = async (from?: Date) => {
+    const getLastEventsFrom = (from?: Date) => {
 
         const conditions = [
             or(
@@ -23,19 +24,21 @@ export const useEventsRepository = () => {
             );
         }
 
-        const events = await db
-            .select()
-            .from(eventsTable)
-            .where(and(...conditions))
-            .orderBy(desc(eventsTable.createdAt))
-            .limit(LIMIT + 1);
-
-        const hasNext = events.length > LIMIT
-
-        return {
-            hasNext: hasNext,
-            events: hasNext ? events.slice(0, LIMIT) : events
-        }
+        return ResultAsync.fromPromise(
+            db.select()
+                .from(eventsTable)
+                .where(and(...conditions))
+                .orderBy(desc(eventsTable.createdAt))
+                .limit(LIMIT + 1)
+                .then(events => {
+                    const hasNext = events.length > LIMIT;
+                    return {
+                        hasNext,
+                        events: hasNext ? events.slice(0, LIMIT) : events,
+                    };
+                }),
+            (err) => new Error(String(err))
+        );
     };
 
     return {

@@ -8,7 +8,9 @@ export const useLLM = () => {
     const conf = useRuntimeConfig();
 
     const setLLM = async (model: string) => {
-        const [config] = await repository.getConfigByGpuId(conf.gpuId)
+        const configResult = await repository.getConfigByGpuId(conf.gpuId);
+        if (configResult.isErr()) throw configResult.error;
+        const [config] = configResult.value;
 
         const response = await ofetch<{
             status: string;
@@ -25,7 +27,9 @@ export const useLLM = () => {
     };
 
     const getCurrentLLM = async () => {
-        const [config] = await repository.getConfigByGpuId(conf.gpuId)
+        const configResult = await repository.getConfigByGpuId(conf.gpuId);
+        if (configResult.isErr()) throw configResult.error;
+        const [config] = configResult.value;
 
         const response = await ofetch<{ current_model: string }>(
             `http://${config.ip}:8000/llm`,
@@ -39,7 +43,10 @@ export const useLLM = () => {
     };
 
     const getLLMAvailableModels = async () => {
-        const [config] = await repository.getConfigByGpuId(conf.gpuId)
+        const configResult = await repository.getConfigByGpuId(conf.gpuId);
+        if (configResult.isErr()) throw configResult.error;
+        const [config] = configResult.value;
+
         const response = await ofetch<{ models: string[] }>(
             `http://${config.ip}:8000/llm/list`,
             {

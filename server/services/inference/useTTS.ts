@@ -7,7 +7,9 @@ export const useTTS = () => {
     const repository = useConfigRepository()
 
     const getTTSAvailableModels = async () => {
-        const [config] = await repository.getConfigByGpuId(conf.gpuId)
+        const configResult = await repository.getConfigByGpuId(conf.gpuId);
+        if (configResult.isErr()) throw configResult.error;
+        const [config] = configResult.value;
 
         const response = await ofetch<{ models: string[] }>(
             `http://${config.ip}:8000/tts/list`,
@@ -23,7 +25,9 @@ export const useTTS = () => {
 
 
     const getCurrentTTS = async () => {
-        const [config] = await repository.getConfigByGpuId(conf.gpuId)
+        const configResult = await repository.getConfigByGpuId(conf.gpuId);
+        if (configResult.isErr()) throw configResult.error;
+        const [config] = configResult.value;
 
         const response = await ofetch<{ current_model: string }>(
             `http://${config.ip}:8000/tts`,
@@ -39,7 +43,9 @@ export const useTTS = () => {
 
 
     const setCurrentTTS = async (model: string) => {
-        const [config] = await repository.getConfigByGpuId(conf.gpuId)
+        const configResult = await repository.getConfigByGpuId(conf.gpuId);
+        if (configResult.isErr()) throw configResult.error;
+        const [config] = configResult.value;
 
         const response = await ofetch<{
             status: string;
