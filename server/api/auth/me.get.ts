@@ -17,34 +17,41 @@ export default useDefineHandler<User>(async (event) => {
   const discord = useDiscord();
   const userRepository = useUserRepository()
 
-  const [user] = await userRepository.getUserByDiscordId(id);
+  const userResult = await userRepository.getUserByDiscordId(id);
 
-  if (isAbsent(user))
-    return apiError({
-      title: "User Not Found",
-      detail:
-        "No user was found with the provided Discord ID. Please ensure you are authenticated or try logging in again.",
-      status: 404,
-      errors: [
-        {
-          field: "id",
-          issue: "User with this ID does not exist in the system",
-        },
-      ],
-    });
+  return userResult.match(
+    async ([user]) => {
+      if (isAbsent(user))
+        return apiError({
+          title: "User Not Found",
+          detail:
+            "No user was found with the provided Discord ID. Please ensure you are authenticated or try logging in again.",
+          status: 404,
+          errors: [
+            {
+              field: "id",
+              issue: "User with this ID does not exist in the system",
+            },
+          ],
+        });
 
-  if (user.expireAt < new Date().getTime()) {
-    const tokens = await discord.refreshToken(user.refreshToken);
+      if (user.expireAt < new Date().getTime()) {
+        const tokens = await discord.refreshToken(user.refreshToken);
 
-    await userRepository.updateUserToken(user.discordId, tokens);
-  }
+        const updateResult = await userRepository.updateUserToken(user.discordId, tokens);
+        if (updateResult.isErr())
+          return apiError({ status: 500, title: "Internal Server Error", detail: updateResult.error.message });
+      }
 
-  return apiSuccess({
-    role: user.role,
-    name: user.globalName,
-    email: user.accessToken,
-    avatar: user.avatar,
-    discordId: user.discordId,
-    decoration: user.decorationAsset ?? "",
-  });
+      return apiSuccess({
+        role: user.role,
+        name: user.globalName,
+        email: user.accessToken,
+        avatar: user.avatar,
+        discordId: user.discordId,
+        decoration: user.decorationAsset ?? "",
+      });
+    },
+    (err) => apiError({ status: 500, title: "Internal Server Error", detail: err.message })
+  );
 });

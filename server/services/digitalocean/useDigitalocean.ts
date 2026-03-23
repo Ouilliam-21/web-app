@@ -1,11 +1,11 @@
 import { ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
 import { GPUStatus } from "@Ouilliam-21/database";
+import { errAsync, okAsync, ResultAsync } from "neverthrow";
 import { ofetch } from "ofetch";
 
 import { useConfigRepository } from "~~/server/repositories/config";
 
 import type { AppHealth, Database, DropletResponse } from "./types";
-import { errAsync, okAsync, ResultAsync } from "neverthrow";
 
 export const useDigitalOcean = () => {
   const conf = useRuntimeConfig();
@@ -103,7 +103,9 @@ export const useDigitalOcean = () => {
 
   const getGPUStatus = async () => {
     const id = conf.gpuId;
-    const [config] = await repository.getConfigByGpuId(id);
+    const configResult = await repository.getConfigByGpuId(id);
+    if (configResult.isErr()) throw configResult.error;
+    const [config] = configResult.value;
 
     return {
       status: config.status,
@@ -113,7 +115,11 @@ export const useDigitalOcean = () => {
 
   const startGPU = async () => {
     const { gpuId, gpuName, gpuRegion, gpuSize, gpuImage, gpuSshKeys } = conf;
-    await repository.updateConfigGpuStatus(gpuId, GPUStatus.STARTING);
+    const updateStatusResult = await repository.updateConfigGpuStatus(
+      gpuId,
+      GPUStatus.STARTING,
+    );
+    if (updateStatusResult.isErr()) throw updateStatusResult.error;
 
     const URL = "https://api.digitalocean.com/v2/droplets";
     const res = await ofetch<DropletResponse>(URL, {
@@ -155,12 +161,13 @@ export const useDigitalOcean = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
     }
 
-    await repository.updateConfig(
+    const updateConfigResult = await repository.updateConfig(
       gpuId,
       ip,
       res.droplet.id.toString(),
       GPUStatus.RUNNING,
     );
+    if (updateConfigResult.isErr()) throw updateConfigResult.error;
 
     return {
       ip: ip,
@@ -171,7 +178,9 @@ export const useDigitalOcean = () => {
   const stopGPU = async () => {
     const { gpuId } = conf;
 
-    const [res] = await repository.getConfigByGpuId(gpuId);
+    const configResult = await repository.getConfigByGpuId(gpuId);
+    if (configResult.isErr()) throw configResult.error;
+    const [res] = configResult.value;
 
     const url = "https://api.digitalocean.com/v2/droplets/" + res.idDroplet;
 
@@ -183,7 +192,8 @@ export const useDigitalOcean = () => {
       },
     });
 
-    await repository.resetConfig(gpuId);
+    const resetResult = await repository.resetConfig(gpuId);
+    if (resetResult.isErr()) throw resetResult.error;
 
     return request;
   };

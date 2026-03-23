@@ -1,14 +1,17 @@
 import { GPUStatus } from "@Ouilliam-21/database";
 
 import { useConfigRepository } from "~~/server/repositories/config";
-import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
+import { apiError, apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 
 export default useDefineHandler<{ status: GPUStatus }>(async () => {
   const conf = useRuntimeConfig();
   const repository = useConfigRepository()
   const { gpuId } = conf;
 
-  const [res] = await repository.getConfigByGpuId(gpuId)
+  const result = await repository.getConfigByGpuId(gpuId)
 
-  return apiSuccess({ status: res.status });
+  return result.match(
+    ([res]) => apiSuccess({ status: res.status }),
+    (err) => apiError({ status: 500, title: "Internal Server Error", detail: err.message })
+  );
 });

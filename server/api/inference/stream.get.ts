@@ -9,7 +9,9 @@ export default defineEventHandler(async (event) => {
   const conf = useRuntimeConfig();
   const repository = useConfigRepository()
 
-  const [res] = await repository.getConfigByGpuId(conf.gpuId)
+  const configResult = await repository.getConfigByGpuId(conf.gpuId)
+  if (configResult.isErr()) throw configResult.error;
+  const [res] = configResult.value;
 
   if (!res || !res.ip || res.ip.trim() === "") {
     throw new Error("SSE not available: Invalid or missing IP address");

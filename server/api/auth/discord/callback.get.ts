@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
 
   const user = await getUserInfo(tokens.access_token);
 
-  const [exist] = await getUserByDiscordId(user.id);
+  const existResult = await getUserByDiscordId(user.id);
 
   const token: Token = {
     token_type: tokens.token_type,
@@ -37,11 +37,18 @@ export default defineEventHandler(async (event) => {
     decorationSkuId: "",
   };
 
-  if (isAbsent(exist)) {
-    await createUser(values);
-  } else {
-    await updateUserToken(user.id, token);
-  }
+  await existResult.match(
+    async ([exist]) => {
+      if (isAbsent(exist)) {
+        const createResult = await createUser(values);
+        if (createResult.isErr()) throw createResult.error;
+      } else {
+        const updateResult = await updateUserToken(user.id, token);
+        if (updateResult.isErr()) throw updateResult.error;
+      }
+    },
+    (err) => Promise.reject(err)
+  );
 
   setCookie(event, "auth", user.id);
 

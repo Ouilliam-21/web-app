@@ -1,6 +1,7 @@
 import { ProcessingJob } from "@Ouilliam-21/database";
 
 import { useEventsRepository } from "~~/server/repositories/events"
+import { apiError, apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 import type { ProcessingRiotEventJob } from "~~/shared/sse/inference/type";
 
 
@@ -32,7 +33,10 @@ export default useDefineHandler<{ hasNext: boolean, events: ProcessingRiotEventJ
 
   const repository = useEventsRepository()
 
-  const events = await repository.getLastEventsFrom(fromDate)
+  const result = await repository.getLastEventsFrom(fromDate)
 
-  return apiSuccess({ events: events.events.map(toProcessingRiotEventJob).reverse(), hasNext: events.hasNext });
+  return result.match(
+    (events) => apiSuccess({ events: events.events.map(toProcessingRiotEventJob).reverse(), hasNext: events.hasNext }),
+    (err) => apiError({ status: 500, title: "Internal Server Error", detail: err.message })
+  );
 })
