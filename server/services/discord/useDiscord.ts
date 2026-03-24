@@ -1,4 +1,4 @@
-import { ResultAsync } from "neverthrow";
+import {  ResultAsync } from "neverthrow";
 import { ofetch } from "ofetch";
 
 import type { Channel, Token, User } from "./types";
@@ -14,15 +14,18 @@ export const useDiscord = () => {
   const discordBotToken = runtimeConfig.discordBotToken;
 
   const getChannels = async () => {
-    return await ofetch<Channel[]>(
-      DISCORD_API + "/guilds/" + discordServerId + "/channels",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bot " + discordBotToken,
+    return ResultAsync.fromPromise(
+      ofetch<Channel[]>(
+        DISCORD_API + "/guilds/" + discordServerId + "/channels",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bot " + discordBotToken,
+          },
         },
-      },
+      ),
+      (err) => new Error(String(err)),
     );
   };
 
@@ -59,7 +62,7 @@ export const useDiscord = () => {
           refresh_token: refreshToken,
         }),
       }),
-      (err) => new Error(String(err))
+      (err) => new Error(String(err)),
     );
   };
 
@@ -77,7 +80,7 @@ export const useDiscord = () => {
           token_type_hint: "access_token",
         }),
       }),
-      (err) => new Error(String(err))
+      (err) => new Error(String(err)),
     );
   };
 

@@ -34,6 +34,7 @@ export default defineNuxtConfig({
   tailwindcss: {
     exposeConfig: true,
   },
+  ssr: true,
   shadcn: {
     /**
      * Prefix for all the imported component.

@@ -1,8 +1,8 @@
 import { ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
 import { GPUStatus } from "@Ouilliam-21/database";
 import { errAsync, okAsync, ResultAsync } from "neverthrow";
-import { ofetch } from "ofetch";
 import { ResultAsync } from "neverthrow";
+import { ofetch } from "ofetch";
 import { ofetch } from "ofetch";
 
 import { useConfigRepository } from "~~/server/repositories/config";
@@ -61,29 +61,29 @@ export const useDigitalOcean = () => {
           Authorization: "Bearer " + conf.digitalOceanToken,
         },
       }),
-      (err) => new Error(String(err))
+      (err) => new Error(String(err)),
     );
   };
 
   const getSpaceStorageUsage = async () => {
-        const s3Client = new S3Client({
-          region: conf.digitalOceanSpaceRegion,
-          endpoint: `https://${conf.digitalOceanSpaceRegion}.digitaloceanspaces.com`,
-          credentials: {
-            accessKeyId: conf.digitalOceanSpaceAccessKey,
-            secretAccessKey: conf.digitalOceanSpaceSecretKey,
-          },
-        });
+    const s3Client = new S3Client({
+      region: conf.digitalOceanSpaceRegion,
+      endpoint: `https://${conf.digitalOceanSpaceRegion}.digitaloceanspaces.com`,
+      credentials: {
+        accessKeyId: conf.digitalOceanSpaceAccessKey,
+        secretAccessKey: conf.digitalOceanSpaceSecretKey,
+      },
+    });
 
-        let totalSize = 0;
-        let continuationToken: string | undefined;
-        const bucketName = conf.digitalOceanSpaceName;
+    let totalSize = 0;
+    let continuationToken: string | undefined;
+    const bucketName = conf.digitalOceanSpaceName;
 
-        do {
-          const command = new ListObjectsV2Command({
-            Bucket: bucketName,
-            ContinuationToken: continuationToken,
-          });
+    do {
+      const command = new ListObjectsV2Command({
+        Bucket: bucketName,
+        ContinuationToken: continuationToken,
+      });
 
       const response = await ResultAsync.fromPromise(
         s3Client.send(command),
@@ -107,17 +107,18 @@ export const useDigitalOcean = () => {
   };
 
   const getGPUStatus = async () => {
-    const id = conf.gpuId;
-    return repository.getConfigByGpuId(id).map(([config]) => ({
-      status: config.status,
-      ip: config.ip ?? "",
-    };
+    const config = await repository.getAppConfig();
+
+    if (config.isErr()) return errAsync(config.error.message);
+    const { status, ip } = config.value;
+    return okAsync({ status, ip: ip ?? "" });
   };
 
   const startGPU = () => {
     const { gpuId, gpuName, gpuRegion, gpuSize, gpuImage, gpuSshKeys } = conf;
 
-    return repository.updateConfigGpuStatus(gpuId, GPUStatus.STARTING)
+    return repository
+      .updateConfigGpuStatus(gpuId, GPUStatus.STARTING)
       .andThen(() =>
         ResultAsync.fromPromise(
           (async () => {
@@ -142,7 +143,8 @@ export const useDigitalOcean = () => {
 
             while (ip == "") {
               const endpoint =
-                "https://api.digitalocean.com/v2/droplets/" + res.droplet.id.toString();
+                "https://api.digitalocean.com/v2/droplets/" +
+                res.droplet.id.toString();
 
               const { droplet } = await ofetch<DropletResponse>(endpoint, {
                 method: "GET",
@@ -152,7 +154,9 @@ export const useDigitalOcean = () => {
                 },
               });
 
-              const publicIp = droplet.networks.v4.filter((ip) => ip.type === "public");
+              const publicIp = droplet.networks.v4.filter(
+                (ip) => ip.type === "public",
+              );
 
               if (publicIp.length > 0) {
                 ip = publicIp.at(0)!.ip_address;
@@ -163,8 +167,8 @@ export const useDigitalOcean = () => {
 
             return { res, ip };
           })(),
-          (err) => new Error(String(err))
-        )
+          (err) => new Error(String(err)),
+        ),
       )
       .andThen(({ res, ip }) =>
         repository
@@ -172,14 +176,15 @@ export const useDigitalOcean = () => {
           .map(() => ({
             ip: ip,
             dropletId: res.droplet.id.toString(),
-          }))
+          })),
       );
   };
 
   const stopGPU = async () => {
     const { gpuId } = conf;
 
-    return repository.getConfigByGpuId(gpuId)
+    return repository
+      .getAppConfig()
       .andThen(([res]) =>
         ResultAsync.fromPromise(
           ofetch("https://api.digitalocean.com/v2/droplets/" + res.idDroplet, {
@@ -189,12 +194,10 @@ export const useDigitalOcean = () => {
               Authorization: "Bearer " + conf.digitalOceanTokenWrite,
             },
           }),
-          (err) => new Error(String(err))
-        )
+          (err) => new Error(String(err)),
+        ),
       )
-      .andThen((request) =>
-        repository.resetConfig(gpuId).map(() => request)
-      );
+      .andThen((request) => repository.resetConfig(gpuId).map(() => request));
   };
 
   return {

@@ -9,7 +9,7 @@ export const useLLM = () => {
     const conf = useRuntimeConfig();
 
     const setLLM = (model: string) => {
-        return repository.getConfigByGpuId(conf.gpuId).andThen(([config]) =>
+        return repository.getAppConfig().andThen(([config]) =>
             ResultAsync.fromPromise(
                 ofetch<{
                     status: string;
@@ -28,7 +28,7 @@ export const useLLM = () => {
     };
 
     const getCurrentLLM = () => {
-        return repository.getConfigByGpuId(conf.gpuId).andThen(([config]) =>
+        return repository.getAppConfig().andThen(([config]) =>
             ResultAsync.fromPromise(
                 ofetch<{ current_model: string }>(
                     `http://${config.ip}:8000/llm`,
@@ -44,7 +44,7 @@ export const useLLM = () => {
     };
 
     const getLLMAvailableModels = () => {
-        return repository.getConfigByGpuId(conf.gpuId).andThen(([config]) =>
+        return repository.getAppConfig().andThen(([config]) =>
             ResultAsync.fromPromise(
                 ofetch<{ models: string[] }>(
                     `http://${config.ip}:8000/llm/list`,

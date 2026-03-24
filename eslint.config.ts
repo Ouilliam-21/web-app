@@ -4,6 +4,8 @@ import tseslint from "typescript-eslint";
 import pluginVue from "eslint-plugin-vue";
 import { defineConfig } from "eslint/config";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+import drizzle from "eslint-plugin-drizzle";
 
 export default defineConfig([
   {
@@ -42,4 +44,17 @@ export default defineConfig([
     files: ["**/*.vue"],
     languageOptions: { parserOptions: { parser: tseslint.parser } },
   },
+  {
+    plugins: {
+      "@typescript-eslint": tsPlugin,
+      drizzle,
+    },
+    rules: {
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-explicit-any": "warn",
+      "drizzle/enforce-delete-with-where": "error",
+      "drizzle/enforce-update-with-where": "error",
+    },
+  }
 ]);

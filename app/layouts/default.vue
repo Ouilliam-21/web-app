@@ -4,7 +4,7 @@ import { useUserService } from "~/services/user";
 
 import EventDialog from "./Dialogs/Event.vue";
 import LoginDialog from "./Dialogs/Login.vue";
-import { Bot, Clipper, Rounds, Settings, Theme, Video } from "./Sections";
+import { Bot, Rounds, Settings, Theme, Video } from "./Sections";
 const { isAuthenticated, userAvatar, userDecoration } = useUserService();
 </script>
 
@@ -19,7 +19,6 @@ const { isAuthenticated, userAvatar, userDecoration } = useUserService();
           <Avatar class="size-12 relative">
             <AvatarImage :src="userAvatar" />
           </Avatar>
-          <p>{{ userDecoration }}</p>
           <img
           v-if="userDecoration !== ''"
             :src="userDecoration"
@@ -36,9 +35,6 @@ const { isAuthenticated, userAvatar, userDecoration } = useUserService();
 
         <!-- Sidebar footer -->
         <div class="flex flex-col gap-3 p-4">
-          <DevOnly>
-            <Clipper class="mt-2" />
-          </DevOnly>
           <Settings />
           <Theme />
         </div>

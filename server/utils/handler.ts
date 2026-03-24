@@ -21,8 +21,14 @@ export function useDefineHandler<
     event: H3Event<Request>
   ) => Promise<ApiResponse<Data>> | ApiResponse<Data>
 ): EventHandler<Request, Promise<ApiResponse<Data>> | ApiResponse<Data>> {
-  return defineEventHandler<
-    Request,
-    Promise<ApiResponse<Data>> | ApiResponse<Data>
-  >(handler);
+  // Wrap and set HTTP status code for ApiError returns
+  return defineEventHandler<Request, Promise<ApiResponse<Data>> | ApiResponse<Data>>(async (event) => {
+    const result = await handler(event);
+    if (result && (result as any).type === "error") {
+      // Set the HTTP status from the error object if present, otherwise default to 500
+      const status = (result as ApiError).status ?? 500;
+      setResponseStatus(event, status);
+    }
+    return result;
+  });
 }

@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   const conf = useRuntimeConfig();
   const repository = useConfigRepository()
 
-  const configResult = await repository.getConfigByGpuId(conf.gpuId)
+  const configResult = await repository.getAppConfig()
   if (configResult.isErr()) return apiError({ status: 500, title: "Internal Server Error", detail: configResult.error.message });
   const [res] = configResult.value;
 
@@ -35,7 +35,8 @@ export default defineEventHandler(async (event) => {
   const eventSource = new EventSource(url);
 
   eventSource.addEventListener("event_status", (event: MessageEvent) =>
-    stream.push(event)
+    //stream.push(event)
+  console.log(event)
   );
 
   return stream.send();

@@ -8,7 +8,7 @@ export const useTTS = () => {
     const repository = useConfigRepository()
 
     const getTTSAvailableModels = () => {
-        return repository.getConfigByGpuId(conf.gpuId).andThen(([config]) =>
+        return repository.getAppConfig().andThen(([config]) =>
             ResultAsync.fromPromise(
                 ofetch<{ models: string[] }>(
                     `http://${config.ip}:8000/tts/list`,
@@ -24,7 +24,7 @@ export const useTTS = () => {
     };
 
     const getCurrentTTS = () => {
-        return repository.getConfigByGpuId(conf.gpuId).andThen(([config]) =>
+        return repository.getAppConfig().andThen(([config]) =>
             ResultAsync.fromPromise(
                 ofetch<{ current_model: string }>(
                     `http://${config.ip}:8000/tts`,
@@ -40,7 +40,7 @@ export const useTTS = () => {
     };
 
     const setCurrentTTS = (model: string) => {
-        return repository.getConfigByGpuId(conf.gpuId).andThen(([config]) =>
+        return repository.getAppConfig().andThen(([config]) =>
             ResultAsync.fromPromise(
                 ofetch<{
                     status: string;

@@ -9,7 +9,7 @@ export const useEvents = () => {
     const conf = useRuntimeConfig();
 
     const listEvents = () => {
-        return repository.getConfigByGpuId(conf.gpuId).andThen(([config]) =>
+        return repository.getAppConfig().andThen(([config]) =>
             ResultAsync.fromPromise(
                 ofetch<{
                     events: ProcessingRiotEventJob[];
@@ -25,7 +25,7 @@ export const useEvents = () => {
     };
 
     const resetEvents = () => {
-        return repository.getConfigByGpuId(conf.gpuId).andThen(([config]) =>
+        return repository.getAppConfig().andThen(([config]) =>
             ResultAsync.fromPromise(
                 ofetch<{
                     status: "success";
