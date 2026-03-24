@@ -1,5 +1,5 @@
 import { useLLM } from "~~/server/services/inference";
-import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
+import { apiError, apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 
 export default useDefineHandler<{
   status: string;
@@ -17,6 +17,9 @@ export default useDefineHandler<{
   }
 
   const { setLLM } = useLLM();
-  const setCurrentLLMResponse = await setLLM(body.name);
-  return apiSuccess(setCurrentLLMResponse);
+  const result = await setLLM(body.name);
+  return result.match(
+    (data) => apiSuccess(data),
+    (err) => apiError({ status: 500, title: "Internal Server Error", detail: err.message })
+  );
 });

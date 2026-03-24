@@ -5,15 +5,14 @@ import { apiError, apiSuccess, useDefineHandler } from "~~/server/utils/handler"
 
 export default useDefineHandler<DatabaseInfoData>(async () => {
   const { getDatabaseInfo } = useDigitalOcean();
-
-  const { database } = await getDatabaseInfo();
-
   const repository = useDatabaseRepository();
 
-  const result = await repository.getDatabaseInfo();
+  const result = await getDatabaseInfo().andThen(({ database }) =>
+    repository.getDatabaseInfo().map((dbResult) => ({ database, dbResult }))
+  );
 
   return result.match(
-    (dbResult) => {
+    ({ database, dbResult }) => {
       const pretty = dbResult.rows[0]!.pg_size_pretty;
       const match = pretty.match(/([\d.]+)\s*(\w+)/);
 

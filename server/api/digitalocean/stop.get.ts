@@ -1,8 +1,11 @@
 import { useDigitalOcean } from "~~/server/services/digitalocean";
-import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
+import { apiError, apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 
 export default useDefineHandler<{ message: string }>(async () => {
   const { stopGPU } = useDigitalOcean();
-  await stopGPU();
-  return apiSuccess({ message: "GPU stopped" });
+  const result = await stopGPU();
+  return result.match(
+    () => apiSuccess({ message: "GPU stopped" }),
+    (err) => apiError({ status: 500, title: "Internal Server Error", detail: err.message })
+  );
 });
