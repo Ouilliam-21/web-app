@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   const repository = useConfigRepository()
 
   const configResult = await repository.getConfigByGpuId(conf.gpuId)
-  if (configResult.isErr()) throw configResult.error;
+  if (configResult.isErr()) return apiError({ status: 500, title: "Internal Server Error", detail: configResult.error.message });
   const [res] = configResult.value;
 
   if (!res || !res.ip || res.ip.trim() === "") {
