@@ -1,4 +1,5 @@
 import { ofetch } from "ofetch";
+import { ResultAsync } from "neverthrow";
 
 import { useConfigRepository } from "~~/server/repositories/config";
 
@@ -7,55 +8,55 @@ export const useLLM = () => {
     const repository = useConfigRepository()
     const conf = useRuntimeConfig();
 
-    const setLLM = async (model: string) => {
-        const configResult = await repository.getConfigByGpuId(conf.gpuId);
-        if (configResult.isErr()) throw configResult.error;
-        const [config] = configResult.value;
-
-        const response = await ofetch<{
-            status: string;
-            current_llm: string;
-            is_loaded: boolean;
-        }>(`http://${config.ip}:8000/llm/switch`, {
-            method: "PUT",
-            body: { model_name: model },
-            headers: {
-                Authorization: `Bearer ${conf.inferenceAuthToken}`,
-            },
-        });
-        return response;
+    const setLLM = (model: string) => {
+        return repository.getConfigByGpuId(conf.gpuId).andThen(([config]) =>
+            ResultAsync.fromPromise(
+                ofetch<{
+                    status: string;
+                    current_llm: string;
+                    is_loaded: boolean;
+                }>(`http://${config.ip}:8000/llm/switch`, {
+                    method: "PUT",
+                    body: { model_name: model },
+                    headers: {
+                        Authorization: `Bearer ${conf.inferenceAuthToken}`,
+                    },
+                }),
+                (err) => new Error(String(err))
+            )
+        );
     };
 
-    const getCurrentLLM = async () => {
-        const configResult = await repository.getConfigByGpuId(conf.gpuId);
-        if (configResult.isErr()) throw configResult.error;
-        const [config] = configResult.value;
-
-        const response = await ofetch<{ current_model: string }>(
-            `http://${config.ip}:8000/llm`,
-            {
-                headers: {
-                    Authorization: `Bearer ${conf.inferenceAuthToken}`,
-                },
-            }
+    const getCurrentLLM = () => {
+        return repository.getConfigByGpuId(conf.gpuId).andThen(([config]) =>
+            ResultAsync.fromPromise(
+                ofetch<{ current_model: string }>(
+                    `http://${config.ip}:8000/llm`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${conf.inferenceAuthToken}`,
+                        },
+                    }
+                ),
+                (err) => new Error(String(err))
+            )
         );
-        return response;
     };
 
-    const getLLMAvailableModels = async () => {
-        const configResult = await repository.getConfigByGpuId(conf.gpuId);
-        if (configResult.isErr()) throw configResult.error;
-        const [config] = configResult.value;
-
-        const response = await ofetch<{ models: string[] }>(
-            `http://${config.ip}:8000/llm/list`,
-            {
-                headers: {
-                    Authorization: `Bearer ${conf.inferenceAuthToken}`,
-                },
-            }
+    const getLLMAvailableModels = () => {
+        return repository.getConfigByGpuId(conf.gpuId).andThen(([config]) =>
+            ResultAsync.fromPromise(
+                ofetch<{ models: string[] }>(
+                    `http://${config.ip}:8000/llm/list`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${conf.inferenceAuthToken}`,
+                        },
+                    }
+                ),
+                (err) => new Error(String(err))
+            )
         );
-        return response;
     };
     return {
         getCurrentLLM, getLLMAvailableModels, setLLM

@@ -1,4 +1,5 @@
 import { ofetch } from "ofetch";
+import { ResultAsync } from "neverthrow";
 
 import { useConfigRepository } from "~~/server/repositories/config";
 
@@ -6,60 +7,55 @@ export const useTTS = () => {
     const conf = useRuntimeConfig();
     const repository = useConfigRepository()
 
-    const getTTSAvailableModels = async () => {
-        const configResult = await repository.getConfigByGpuId(conf.gpuId);
-        if (configResult.isErr()) throw configResult.error;
-        const [config] = configResult.value;
-
-        const response = await ofetch<{ models: string[] }>(
-            `http://${config.ip}:8000/tts/list`,
-            {
-                headers: {
-                    Authorization: `Bearer ${conf.inferenceAuthToken}`,
-                },
-            }
+    const getTTSAvailableModels = () => {
+        return repository.getConfigByGpuId(conf.gpuId).andThen(([config]) =>
+            ResultAsync.fromPromise(
+                ofetch<{ models: string[] }>(
+                    `http://${config.ip}:8000/tts/list`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${conf.inferenceAuthToken}`,
+                        },
+                    }
+                ),
+                (err) => new Error(String(err))
+            )
         );
-        return response;
     };
 
-
-
-    const getCurrentTTS = async () => {
-        const configResult = await repository.getConfigByGpuId(conf.gpuId);
-        if (configResult.isErr()) throw configResult.error;
-        const [config] = configResult.value;
-
-        const response = await ofetch<{ current_model: string }>(
-            `http://${config.ip}:8000/tts`,
-            {
-                headers: {
-                    Authorization: `Bearer ${conf.inferenceAuthToken}`,
-                },
-            }
+    const getCurrentTTS = () => {
+        return repository.getConfigByGpuId(conf.gpuId).andThen(([config]) =>
+            ResultAsync.fromPromise(
+                ofetch<{ current_model: string }>(
+                    `http://${config.ip}:8000/tts`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${conf.inferenceAuthToken}`,
+                        },
+                    }
+                ),
+                (err) => new Error(String(err))
+            )
         );
-        return response;
     };
 
-
-
-    const setCurrentTTS = async (model: string) => {
-        const configResult = await repository.getConfigByGpuId(conf.gpuId);
-        if (configResult.isErr()) throw configResult.error;
-        const [config] = configResult.value;
-
-        const response = await ofetch<{
-            status: string;
-            current_tts: string;
-            is_loaded: boolean;
-        }>(`http://${config.ip}:8000/tts`, {
-            method: "PUT",
-            body: { name: model },
-            headers: {
-                Authorization: `Bearer ${conf.inferenceAuthToken}`,
-            },
-        });
-        
-        return response;
+    const setCurrentTTS = (model: string) => {
+        return repository.getConfigByGpuId(conf.gpuId).andThen(([config]) =>
+            ResultAsync.fromPromise(
+                ofetch<{
+                    status: string;
+                    current_tts: string;
+                    is_loaded: boolean;
+                }>(`http://${config.ip}:8000/tts`, {
+                    method: "PUT",
+                    body: { name: model },
+                    headers: {
+                        Authorization: `Bearer ${conf.inferenceAuthToken}`,
+                    },
+                }),
+                (err) => new Error(String(err))
+            )
+        );
     };
 
     return {
