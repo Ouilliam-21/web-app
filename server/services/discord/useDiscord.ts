@@ -41,7 +41,7 @@ export const useDiscord = () => {
           redirect_uri: discordRedirectUrl,
         }),
       }),
-      (err) => new Error(String(err))
+      (err) => new Error(String(err)),
     );
   };
 
@@ -90,7 +90,7 @@ export const useDiscord = () => {
           Authorization: "Bearer " + bearerToken,
         },
       }),
-      (err) => new Error(String(err))
+      (err) => new Error(String(err)),
     );
   };
 

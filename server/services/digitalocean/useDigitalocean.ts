@@ -18,7 +18,7 @@ export const useDigitalOcean = () => {
       "https://api.digitalocean.com/v2/databases/" +
       conf.digitalOceanDatabaseId;
 
-    return await ResultAsync.fromPromise(
+    return ResultAsync.fromPromise(
       ofetch<{ database: Database }>(URL, {
         method: "GET",
         headers: {
@@ -36,7 +36,7 @@ export const useDigitalOcean = () => {
       conf.digitalOceanWebAppId +
       "/health";
 
-    return await ResultAsync.fromPromise(
+    return ResultAsync.fromPromise(
       ofetch<{ app_health: AppHealth }>(URL, {
         method: "GET",
         headers: {
@@ -65,9 +65,7 @@ export const useDigitalOcean = () => {
     );
   };
 
-  const getSpaceStorageUsage = () => {
-    return ResultAsync.fromPromise(
-      (async () => {
+  const getSpaceStorageUsage = async () => {
         const s3Client = new S3Client({
           region: conf.digitalOceanSpaceRegion,
           endpoint: `https://${conf.digitalOceanSpaceRegion}.digitaloceanspaces.com`,
@@ -108,21 +106,16 @@ export const useDigitalOcean = () => {
     return okAsync(totalSize);
   };
 
-  const getGPUStatus = () => {
+  const getGPUStatus = async () => {
     const id = conf.gpuId;
     return repository.getConfigByGpuId(id).map(([config]) => ({
       status: config.status,
       ip: config.ip ?? "",
-    }));
+    };
   };
 
   const startGPU = () => {
     const { gpuId, gpuName, gpuRegion, gpuSize, gpuImage, gpuSshKeys } = conf;
-    const updateStatusResult = await repository.updateConfigGpuStatus(
-      gpuId,
-      GPUStatus.STARTING,
-    );
-    if (updateStatusResult.isErr()) throw updateStatusResult.error;
 
     return repository.updateConfigGpuStatus(gpuId, GPUStatus.STARTING)
       .andThen(() =>
@@ -168,21 +161,22 @@ export const useDigitalOcean = () => {
               await new Promise((resolve) => setTimeout(resolve, 2000));
             }
 
-    const updateConfigResult = await repository.updateConfig(
-      gpuId,
-      ip,
-      res.droplet.id.toString(),
-      GPUStatus.RUNNING,
-    );
-    if (updateConfigResult.isErr()) throw updateConfigResult.error;
-
-    return {
-      ip: ip,
-      dropletId: res.droplet.id.toString(),
-    };
+            return { res, ip };
+          })(),
+          (err) => new Error(String(err))
+        )
+      )
+      .andThen(({ res, ip }) =>
+        repository
+          .updateConfig(gpuId, ip, res.droplet.id.toString(), GPUStatus.RUNNING)
+          .map(() => ({
+            ip: ip,
+            dropletId: res.droplet.id.toString(),
+          }))
+      );
   };
 
-  const stopGPU = () => {
+  const stopGPU = async () => {
     const { gpuId } = conf;
 
     return repository.getConfigByGpuId(gpuId)
