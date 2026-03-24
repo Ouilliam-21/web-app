@@ -1,11 +1,16 @@
 import { ProcessingJob } from "@Ouilliam-21/database";
 
-import { useEventsRepository } from "~~/server/repositories/events"
-import { apiError, apiSuccess, useDefineHandler } from "~~/server/utils/handler";
+import { useEventsRepository } from "~~/server/repositories/events";
+import {
+  apiError,
+  apiSuccess,
+  useDefineHandler,
+} from "~~/server/utils/handler";
 import type { ProcessingRiotEventJob } from "~~/shared/sse/inference/type";
 
-
-const toProcessingRiotEventJob = (event: ProcessingJob): ProcessingRiotEventJob => {
+const toProcessingRiotEventJob = (
+  event: ProcessingJob,
+): ProcessingRiotEventJob => {
   return {
     id: event.id,
     created_at: event.createdAt.toString(),
@@ -23,20 +28,31 @@ const toProcessingRiotEventJob = (event: ProcessingJob): ProcessingRiotEventJob 
     tts_started_at: event.ttsStartedAt?.toString(),
     tts_completed_at: event.ttsCompletedAt?.toString(),
     tts_model_name: event.ttsModelName ?? undefined,
-  }
-}
+  };
+};
 
-
-export default useDefineHandler<{ hasNext: boolean, events: ProcessingRiotEventJob[] }>(async (event) => {
+export default useDefineHandler<{
+  hasNext: boolean;
+  events: ProcessingRiotEventJob[];
+}>(async (event) => {
   const { from } = getQuery<{ from?: string }>(event);
   const fromDate = from ? new Date(from) : undefined;
 
-  const repository = useEventsRepository()
+  const repository = useEventsRepository();
 
-  const result = await repository.getLastEventsFrom(fromDate)
+  const result = await repository.getLastEventsFrom(fromDate);
 
   return result.match(
-    (events) => apiSuccess({ events: events.events.map(toProcessingRiotEventJob).reverse(), hasNext: events.hasNext }),
-    (err) => apiError({ status: 500, title: "Internal Server Error", detail: err.message })
+    (events) =>
+      apiSuccess({
+        events: events.events.map(toProcessingRiotEventJob).reverse(),
+        hasNext: events.hasNext,
+      }),
+    (err) =>
+      apiError({
+        status: 500,
+        title: "Internal Server Error",
+        detail: err.message,
+      }),
   );
-})
+});
