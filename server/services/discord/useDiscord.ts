@@ -1,6 +1,7 @@
-import {  ResultAsync } from "neverthrow";
+import { ResultAsync } from "neverthrow";
 import { ofetch } from "ofetch";
 import { ResultAsync } from "neverthrow";
+import { ofetch } from "ofetch";
 
 import type { Channel, Token, User } from "./types";
 

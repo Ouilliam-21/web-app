@@ -1,6 +1,7 @@
 import { errAsync, ResultAsync } from "neverthrow";
 import { ofetch } from "ofetch";
 import { ResultAsync } from "neverthrow";
+import { ofetch } from "ofetch";
 
 import { useConfigRepository } from "~~/server/repositories/config";
 
