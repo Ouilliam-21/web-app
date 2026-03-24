@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {CircleChevronDown} from "lucide-vue-next";
 
+import { Item, ItemSkeleton } from "../Item";
 import type { Events } from "../types";
 import { useForm } from './useForm';
-import { Item, ItemSkeleton } from "../Item";
 
 const {events, autoScroll}=defineProps<{
     events: Events, 

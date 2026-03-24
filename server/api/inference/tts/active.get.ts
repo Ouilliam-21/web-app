@@ -1,9 +1,13 @@
 import { useTTS } from "~~/server/services/inference";
-import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
+import { apiError, apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 
 export default useDefineHandler<{ active: string }>(async () => {
   const { getCurrentTTS } = useTTS();
-  const currentTTS = await getCurrentTTS();
-  console.log(currentTTS)
-  return apiSuccess({active: currentTTS.current_model});
+  const result = await getCurrentTTS();
+  return result.match(
+    (data) => {
+      return apiSuccess({ active: data.current_model });
+    },
+    (err) => apiError({ status: 500, title: "Internal Server Error", detail: err.message })
+  );
 });

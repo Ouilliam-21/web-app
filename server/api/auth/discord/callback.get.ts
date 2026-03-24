@@ -9,11 +9,17 @@ export default defineEventHandler(async (event) => {
   const { getAccessToken, getUserInfo } = useDiscord();
   const {getUserByDiscordId, createUser,updateUserToken} = useUserRepository();
 
-  const tokens = await getAccessToken(code);
+  const tokensResult = await getAccessToken(code);
+  if (tokensResult.isErr()) return apiError({ status: 500, title: "Internal Server Error", detail: tokensResult.error.message });
+  const tokens = tokensResult.value;
 
-  const user = await getUserInfo(tokens.access_token);
+  const userResult = await getUserInfo(tokens.access_token);
+  if (userResult.isErr()) return apiError({ status: 500, title: "Internal Server Error", detail: userResult.error.message });
+  const user = userResult.value;
 
-  const [exist] = await getUserByDiscordId(user.id);
+  const existResult = await getUserByDiscordId(user.id);
+  if (existResult.isErr()) return apiError({ status: 500, title: "Internal Server Error", detail: existResult.error.message });
+  const [exist] = existResult.value;
 
   const token: Token = {
     token_type: tokens.token_type,
@@ -38,9 +44,11 @@ export default defineEventHandler(async (event) => {
   };
 
   if (isAbsent(exist)) {
-    await createUser(values);
+    const createResult = await createUser(values);
+    if (createResult.isErr()) return apiError({ status: 500, title: "Internal Server Error", detail: createResult.error.message });
   } else {
-    await updateUserToken(user.id, token);
+    const updateResult = await updateUserToken(user.id, token);
+    if (updateResult.isErr()) return apiError({ status: 500, title: "Internal Server Error", detail: updateResult.error.message });
   }
 
   setCookie(event, "auth", user.id);

@@ -1,5 +1,6 @@
 import { ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
 import { GPUStatus } from "@Ouilliam-21/database";
+import { ResultAsync } from "neverthrow";
 import { ofetch } from "ofetch";
 
 import { useConfigRepository } from "~~/server/repositories/config";
@@ -10,162 +11,184 @@ export const useDigitalOcean = () => {
   const conf = useRuntimeConfig();
   const repository = useConfigRepository();
 
-  const getDatabaseInfo = async () => {
+  const getDatabaseInfo = () => {
     const URL =
       "https://api.digitalocean.com/v2/databases/" +
       conf.digitalOceanDatabaseId;
-    return await ofetch<{ database: Database }>(URL, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + conf.digitalOceanToken,
-      },
-    });
+    return ResultAsync.fromPromise(
+      ofetch<{ database: Database }>(URL, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + conf.digitalOceanToken,
+        },
+      }),
+      (err) => new Error(String(err))
+    );
   };
 
-  const getWebAppHealth = async () => {
+  const getWebAppHealth = () => {
     const URL =
       "https://api.digitalocean.com/v2/apps/" +
       conf.digitalOceanWebAppId +
       "/health";
-
-    return await ofetch<{ app_health: AppHealth }>(URL, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + conf.digitalOceanToken,
-      },
-    });
+    return ResultAsync.fromPromise(
+      ofetch<{ app_health: AppHealth }>(URL, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + conf.digitalOceanToken,
+        },
+      }),
+      (err) => new Error(String(err))
+    );
   };
 
-  const restartWebApp = async () => {
+  const restartWebApp = () => {
     const URL =
       "https://api.digitalocean.com/v2/apps/" +
       conf.digitalOceanWebAppId +
       "/restart";
-    return await ofetch(URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + conf.digitalOceanToken,
-      },
-    });
-  };
-
-  const getSpaceStorageUsage = async () => {
-    const s3Client = new S3Client({
-      region: conf.digitalOceanSpaceRegion,
-      endpoint: `https://${conf.digitalOceanSpaceRegion}.digitaloceanspaces.com`,
-      credentials: {
-        accessKeyId: conf.digitalOceanSpaceAccessKey,
-        secretAccessKey: conf.digitalOceanSpaceSecretKey,
-      },
-    });
-
-    let totalSize = 0;
-    let continuationToken: string | undefined;
-    const bucketName = conf.digitalOceanSpaceName;
-
-    do {
-      const command = new ListObjectsV2Command({
-        Bucket: bucketName,
-        ContinuationToken: continuationToken,
-      });
-
-      const response = await s3Client.send(command);
-
-      if (response.Contents) {
-        for (const obj of response.Contents) {
-          totalSize += obj.Size || 0;
-        }
-      }
-
-      continuationToken = response.NextContinuationToken;
-    } while (continuationToken);
-
-    return totalSize;
-  };
-
-  const getGPUStatus = async () => {
-    const id = conf.gpuId;
-    const [config] = await repository.getConfigByGpuId(id);
-
-    return {
-      status: config.status,
-      ip: config.ip ?? "",
-    };
-  };
-
-  const startGPU = async () => {
-    const { gpuId, gpuName, gpuRegion, gpuSize, gpuImage, gpuSshKeys } = conf;
-    await repository.updateConfigGpuStatus(gpuId, GPUStatus.STARTING);
-
-    const URL = "https://api.digitalocean.com/v2/droplets";
-    const res = await ofetch<DropletResponse>(URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + conf.digitalOceanTokenWrite,
-      },
-      body: {
-        name: gpuName,
-        region: gpuRegion,
-        size: gpuSize,
-        image: gpuImage,
-        ssh_keys: [gpuSshKeys],
-        monitoring: true,
-      },
-    });
-
-    let ip = "";
-
-    while (ip == "") {
-      const endpoint =
-        "https://api.digitalocean.com/v2/droplets/" + res.droplet.id.toString();
-
-      const { droplet } = await ofetch<DropletResponse>(endpoint, {
-        method: "GET",
+    return ResultAsync.fromPromise(
+      ofetch(URL, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + conf.digitalOceanTokenWrite,
+          Authorization: "Bearer " + conf.digitalOceanToken,
         },
-      });
-
-      const publicIp = droplet.networks.v4.filter((ip) => ip.type === "public");
-
-      if (publicIp.length > 0) {
-        ip = publicIp.at(0)!.ip_address;
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-    }
-
-    await repository.updateConfig(gpuId, ip, res.droplet.id.toString(), GPUStatus.RUNNING);
-
-    return {
-      ip: ip,
-      dropletId: res.droplet.id.toString()
-    }
+      }),
+      (err) => new Error(String(err))
+    );
   };
 
-  const stopGPU = async () => {
+  const getSpaceStorageUsage = () => {
+    return ResultAsync.fromPromise(
+      (async () => {
+        const s3Client = new S3Client({
+          region: conf.digitalOceanSpaceRegion,
+          endpoint: `https://${conf.digitalOceanSpaceRegion}.digitaloceanspaces.com`,
+          credentials: {
+            accessKeyId: conf.digitalOceanSpaceAccessKey,
+            secretAccessKey: conf.digitalOceanSpaceSecretKey,
+          },
+        });
+
+        let totalSize = 0;
+        let continuationToken: string | undefined;
+        const bucketName = conf.digitalOceanSpaceName;
+
+        do {
+          const command = new ListObjectsV2Command({
+            Bucket: bucketName,
+            ContinuationToken: continuationToken,
+          });
+
+          const response = await s3Client.send(command);
+
+          if (response.Contents) {
+            for (const obj of response.Contents) {
+              totalSize += obj.Size || 0;
+            }
+          }
+
+          continuationToken = response.NextContinuationToken;
+        } while (continuationToken);
+
+        return totalSize;
+      })(),
+      (err) => new Error(String(err))
+    );
+  };
+
+  const getGPUStatus = () => {
+    const id = conf.gpuId;
+    return repository.getConfigByGpuId(id).map(([config]) => ({
+      status: config.status,
+      ip: config.ip ?? "",
+    }));
+  };
+
+  const startGPU = () => {
+    const { gpuId, gpuName, gpuRegion, gpuSize, gpuImage, gpuSshKeys } = conf;
+
+    return repository.updateConfigGpuStatus(gpuId, GPUStatus.STARTING)
+      .andThen(() =>
+        ResultAsync.fromPromise(
+          (async () => {
+            const URL = "https://api.digitalocean.com/v2/droplets";
+            const res = await ofetch<DropletResponse>(URL, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + conf.digitalOceanTokenWrite,
+              },
+              body: {
+                name: gpuName,
+                region: gpuRegion,
+                size: gpuSize,
+                image: gpuImage,
+                ssh_keys: [gpuSshKeys],
+                monitoring: true,
+              },
+            });
+
+            let ip = "";
+
+            while (ip == "") {
+              const endpoint =
+                "https://api.digitalocean.com/v2/droplets/" + res.droplet.id.toString();
+
+              const { droplet } = await ofetch<DropletResponse>(endpoint, {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: "Bearer " + conf.digitalOceanTokenWrite,
+                },
+              });
+
+              const publicIp = droplet.networks.v4.filter((ip) => ip.type === "public");
+
+              if (publicIp.length > 0) {
+                ip = publicIp.at(0)!.ip_address;
+              }
+
+              await new Promise((resolve) => setTimeout(resolve, 2000));
+            }
+
+            return { res, ip };
+          })(),
+          (err) => new Error(String(err))
+        )
+      )
+      .andThen(({ res, ip }) =>
+        repository
+          .updateConfig(gpuId, ip, res.droplet.id.toString(), GPUStatus.RUNNING)
+          .map(() => ({
+            ip: ip,
+            dropletId: res.droplet.id.toString(),
+          }))
+      );
+  };
+
+  const stopGPU = () => {
     const { gpuId } = conf;
 
-    const [res] = await repository.getConfigByGpuId(gpuId);
-
-    const url = "https://api.digitalocean.com/v2/droplets/" + res.idDroplet;
-
-    const request = await ofetch(url, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + conf.digitalOceanTokenWrite,
-      },
-    });
-
-    await repository.resetConfig(gpuId);
-
-    return request;
+    return repository.getConfigByGpuId(gpuId)
+      .andThen(([res]) =>
+        ResultAsync.fromPromise(
+          ofetch("https://api.digitalocean.com/v2/droplets/" + res.idDroplet, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + conf.digitalOceanTokenWrite,
+            },
+          }),
+          (err) => new Error(String(err))
+        )
+      )
+      .andThen((request) =>
+        repository.resetConfig(gpuId).map(() => request)
+      );
   };
 
   return {

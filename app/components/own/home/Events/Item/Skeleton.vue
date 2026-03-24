@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Item,
   ItemActions,
@@ -7,6 +6,7 @@ import {
   ItemDescription,
   ItemTitle,
 } from '@/components/ui/item'
+import { Skeleton } from "@/components/ui/skeleton";
 </script>
 
 <template>
