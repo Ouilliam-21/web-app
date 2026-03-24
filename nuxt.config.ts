@@ -3,6 +3,8 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   runtimeConfig: {
+    discordBotToken: process.env.DISCORD_BOT_TOKEN,
+    discordServerId: process.env.DISCORD_SERVER_ID,
     discordClientId: process.env.DISCORD_CLIENT_ID,
     discordClientSecret: process.env.DISCORD_CLIENT_SECRET,
     discordCallbackUrl: process.env.DISCORD_CALLBACK_URL,

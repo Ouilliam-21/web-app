@@ -5,6 +5,7 @@ import { ofetch } from "ofetch";
 import { useConfigRepository } from "~~/server/repositories/config";
 
 import type { AppHealth, Database, DropletResponse } from "./types";
+import { errAsync, okAsync, ResultAsync } from "neverthrow";
 
 export const useDigitalOcean = () => {
   const conf = useRuntimeConfig();
@@ -14,13 +15,17 @@ export const useDigitalOcean = () => {
     const URL =
       "https://api.digitalocean.com/v2/databases/" +
       conf.digitalOceanDatabaseId;
-    return await ofetch<{ database: Database }>(URL, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + conf.digitalOceanToken,
-      },
-    });
+
+    return await ResultAsync.fromPromise(
+      ofetch<{ database: Database }>(URL, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + conf.digitalOceanToken,
+        },
+      }),
+      (error) => new Error(String(error)),
+    );
   };
 
   const getWebAppHealth = async () => {
@@ -29,13 +34,16 @@ export const useDigitalOcean = () => {
       conf.digitalOceanWebAppId +
       "/health";
 
-    return await ofetch<{ app_health: AppHealth }>(URL, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + conf.digitalOceanToken,
-      },
-    });
+    return await ResultAsync.fromPromise(
+      ofetch<{ app_health: AppHealth }>(URL, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + conf.digitalOceanToken,
+        },
+      }),
+      (error) => new Error(String(error)),
+    );
   };
 
   const restartWebApp = async () => {
@@ -72,18 +80,25 @@ export const useDigitalOcean = () => {
         ContinuationToken: continuationToken,
       });
 
-      const response = await s3Client.send(command);
+      const response = await ResultAsync.fromPromise(
+        s3Client.send(command),
+        (error) => new Error(String(error)),
+      );
 
-      if (response.Contents) {
-        for (const obj of response.Contents) {
+      if (response.isErr()) return errAsync(response.error.message);
+
+      const { Contents, NextContinuationToken } = response.value;
+
+      if (Contents) {
+        for (const obj of Contents) {
           totalSize += obj.Size || 0;
         }
       }
 
-      continuationToken = response.NextContinuationToken;
+      continuationToken = NextContinuationToken;
     } while (continuationToken);
 
-    return totalSize;
+    return okAsync(totalSize);
   };
 
   const getGPUStatus = async () => {
@@ -140,12 +155,17 @@ export const useDigitalOcean = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
     }
 
-    await repository.updateConfig(gpuId, ip, res.droplet.id.toString(), GPUStatus.RUNNING);
+    await repository.updateConfig(
+      gpuId,
+      ip,
+      res.droplet.id.toString(),
+      GPUStatus.RUNNING,
+    );
 
     return {
       ip: ip,
-      dropletId: res.droplet.id.toString()
-    }
+      dropletId: res.droplet.id.toString(),
+    };
   };
 
   const stopGPU = async () => {

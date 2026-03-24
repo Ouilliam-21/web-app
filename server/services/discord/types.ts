@@ -46,3 +46,25 @@ export interface User {
     tag: string;
     badge: string;
 }
+
+export enum ChannelType {
+    GUILD_TEXT = 0,
+    GUILD_VOICE = 2,
+}
+export interface Channel {
+    id: string
+    type: ChannelType
+    last_message_id: string
+    flags: number
+    guild_id: string
+    name: string
+    parent_id: string
+    rate_limit_per_user: number
+    bitrate: number
+    user_limit: number
+    rtc_region: string
+    position: number
+    permission_overwrites: string[]
+    nsfw: boolean
+  }
+  

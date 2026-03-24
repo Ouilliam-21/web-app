@@ -13,6 +13,8 @@ export default useDefineHandler<Array<User & { expireAt: number }>>(
       ? await userRepository.getUserByDiscordId(discordId)
       : await userRepository.getUsers();
 
+    console.log(users);
+
     return apiSuccess(
       users.map((user) => ({
         discordId: user.discordId,

@@ -1,6 +1,6 @@
 import { ofetch } from "ofetch";
 
-import type { Token, User } from "./types";
+import type { Channel, Token, User } from "./types";
 
 export const useDiscord = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -9,6 +9,21 @@ export const useDiscord = () => {
   const discordClientId = runtimeConfig.discordClientId;
   const discordClientSecret = runtimeConfig.discordClientSecret;
   const discordRedirectUrl = runtimeConfig.discordRedirectUrl;
+  const discordServerId = runtimeConfig.discordServerId;
+  const discordBotToken = runtimeConfig.discordBotToken;
+
+  const getChannels = async () => {
+    return await ofetch<Channel[]>(
+      DISCORD_API + "/guilds/" + discordServerId + "/channels",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bot " + discordBotToken,
+        },
+      },
+    );
+  };
 
   const getAccessToken = async (code: string) => {
     return await ofetch<Token>(DISCORD_API + "/oauth2/token", {
@@ -71,5 +86,6 @@ export const useDiscord = () => {
     getAccessToken,
     refreshToken,
     revokeToken,
+    getChannels,
   };
 };

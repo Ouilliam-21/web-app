@@ -33,8 +33,8 @@ export default defineEventHandler(async (event) => {
     username: user.username,
     avatar: user.avatar,
     globalName: user.global_name,
-    decorationAsset: user.avatar_decoration_data.asset,
-    decorationSkuId: user.avatar_decoration_data.sku_id,
+    decorationAsset: "",
+    decorationSkuId: "",
   };
 
   if (isAbsent(exist)) {

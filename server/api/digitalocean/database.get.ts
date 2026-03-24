@@ -6,7 +6,17 @@ import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 export default useDefineHandler<DatabaseInfoData>(async () => {
   const { getDatabaseInfo } = useDigitalOcean();
 
-  const { database } = await getDatabaseInfo();
+  const databaseInfo = await getDatabaseInfo();
+
+  if (databaseInfo.isErr()) {
+    return apiError({
+      title: "Database Error",
+      detail: databaseInfo.error.message,
+      status: 500,
+    });
+  }
+
+  const { database } = databaseInfo.value;
 
   const repository = useDatabaseRepository();
 

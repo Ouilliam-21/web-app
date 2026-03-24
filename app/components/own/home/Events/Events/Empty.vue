@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Swords } from 'lucide-vue-next'
+
 import {
   Empty,
   EmptyDescription,

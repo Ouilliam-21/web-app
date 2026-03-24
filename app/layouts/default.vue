@@ -19,7 +19,9 @@ const { isAuthenticated, userAvatar, userDecoration } = useUserService();
           <Avatar class="size-12 relative">
             <AvatarImage :src="userAvatar" />
           </Avatar>
+          <p>{{ userDecoration }}</p>
           <img
+          v-if="userDecoration !== ''"
             :src="userDecoration"
             class="absolute size-16 right-2 pointer-events-none z-10"
           />

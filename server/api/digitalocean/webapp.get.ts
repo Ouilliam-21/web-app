@@ -6,9 +6,17 @@ import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
 export default useDefineHandler<WebAppHealthData>(async () => {
   const { getWebAppHealth } = useDigitalOcean();
 
-  const { app_health } = await getWebAppHealth();
+  const webAppHealth = await getWebAppHealth();
 
-  const first = app_health.components.at(0);
+  if (webAppHealth.isErr()) {
+    return apiError({
+      title: "Web app health unavailable",
+      detail: webAppHealth.error.message,
+      status: 500,
+    });
+  }
+
+  const first = webAppHealth.value.app_health.components.at(0);
 
   if (isAbsent(first)) {
     return apiError({

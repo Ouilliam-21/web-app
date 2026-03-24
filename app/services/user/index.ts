@@ -11,7 +11,7 @@ export const useUserService = () => {
   });
 
   const userDecoration = computed(() => {
-    if (state.kind === "anonymous") return "";
+    if (state.kind === "anonymous" || state.user.decoration === "") return "";
     return `https://cdn.discordapp.com/avatar-decoration-presets/${state.user.decoration}.webp?size=512`;
   });
 
