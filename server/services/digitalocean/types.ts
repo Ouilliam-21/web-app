@@ -99,14 +99,14 @@ interface Droplet {
   disk_info: DiskInfo[];
   locked: boolean;
   status: string;
-  kernel: any;
+  kernel: string;
   created_at: string;
   features: string[];
-  backup_ids: any[];
-  next_backup_window: any;
-  snapshot_ids: any[];
+  backup_ids: string[];
+  next_backup_window: string;
+  snapshot_ids: string[];
   image: Image;
-  volume_ids: any[];
+  volume_ids: string[];
   size: Size2;
   size_slug: string;
   networks: Networks;
@@ -136,7 +136,7 @@ interface Image {
   min_disk_size: number;
   size_gigabytes: number;
   description: string;
-  tags: any[];
+  tags: string[];
   status: string;
   error_message: string;
 }
@@ -156,7 +156,7 @@ interface Size2 {
 
 interface Networks {
   v4: V4[];
-  v6: any[];
+  v6: string[];
 }
 
 interface V4 {

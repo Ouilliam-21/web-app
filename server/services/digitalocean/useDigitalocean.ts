@@ -1,7 +1,7 @@
 import { ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
 import { GPUStatus } from "@Ouilliam-21/database";
-import { ofetch } from "ofetch";
 import { ResultAsync } from "neverthrow";
+import { ofetch } from "ofetch";
 
 import { useConfigRepository } from "~~/server/repositories/config";
 

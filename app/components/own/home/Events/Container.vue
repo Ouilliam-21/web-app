@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Spinner } from "@/components/ui/spinner";
-import { useFetch } from "#app";
-import { Empty, Events } from "./Events";
 import { computed, ref } from 'vue'
+
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -11,7 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
+import { useFetch } from "#app";
 import { useEventsService } from '~/services/events';
+
+import { Empty, Events } from "./Events";
 import Menu from "./Menu.vue";
 
 const { 

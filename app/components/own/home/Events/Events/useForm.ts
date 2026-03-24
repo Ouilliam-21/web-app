@@ -1,9 +1,9 @@
 import { useInfiniteScroll, useVirtualList } from '@vueuse/core'
 import { type ReadonlyRefOrGetter } from "@vueuse/core";
-import { onMounted, ref, computed, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
-import type { ProcessingRiotEventJob } from '~~/shared/sse/inference/type';
 import { useEventsService } from '~/services/events';
+import type { ProcessingRiotEventJob } from '~~/shared/sse/inference/type';
 
 
 export const useForm = (options: {
@@ -96,7 +96,7 @@ export const useForm = (options: {
         });
     }
 
-    const onScroll = (event: Event) => {
+    const onScroll = () => {
         const container = containerProps.ref.value
         isStickToTheBottom.value = isAbsent(container) ? true : container.scrollHeight - container.scrollTop < 1000
     }

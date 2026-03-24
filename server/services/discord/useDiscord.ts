@@ -1,5 +1,5 @@
-import { ofetch } from "ofetch";
 import { ResultAsync } from "neverthrow";
+import { ofetch } from "ofetch";
 
 import type { Token, User } from "./types";
 
