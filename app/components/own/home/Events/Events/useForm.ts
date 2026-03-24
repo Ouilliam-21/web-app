@@ -96,7 +96,7 @@ export const useForm = (options: {
         });
     }
 
-    const onScroll = (event: Event) => {
+    const onScroll = () => {
         const container = containerProps.ref.value
         isStickToTheBottom.value = isAbsent(container) ? true : container.scrollHeight - container.scrollTop < 1000
     }

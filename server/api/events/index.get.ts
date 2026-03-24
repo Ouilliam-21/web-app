@@ -1,4 +1,4 @@
-import { ProcessingJob } from "@Ouilliam-21/database";
+import { ProcessingJob, ProcessingRiotEventStatus } from "@Ouilliam-21/database";
 
 import { useEventsRepository } from "~~/server/repositories/events";
 import {

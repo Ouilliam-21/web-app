@@ -1,4 +1,4 @@
-import { processingRiotEventsJobs as eventsTable } from "@Ouilliam-21/database";
+import { processingRiotEventsJobs as eventsTable, ProcessingRiotEventStatus } from "@Ouilliam-21/database";
 import { and, desc, eq, lt, or } from "drizzle-orm";
 import { ResultAsync } from "neverthrow";
 
@@ -8,7 +8,7 @@ export const useEventsRepository = () => {
   const LIMIT = 10;
   const getLastEventsFrom = (from?: Date) => {
     const conditions = [
-      or(eq(eventsTable.status, "completed"), eq(eventsTable.status, "failed")),
+      or(eq(eventsTable.status, ProcessingRiotEventStatus.COMPLETED), eq(eventsTable.status, ProcessingRiotEventStatus.FAILED)),
     ];
 
     if (isPresent(from)) {

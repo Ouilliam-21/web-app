@@ -6,7 +6,6 @@ export default useDefineHandler<{ items: string[] }>(async () => {
   const result = await getLLMAvailableModels();
   return result.match(
     (data) => {
-      console.log(data);
       return apiSuccess({ items: data.models });
     },
     (err) => apiError({ status: 500, title: "Internal Server Error", detail: err.message })

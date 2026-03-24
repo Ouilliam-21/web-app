@@ -1,5 +1,5 @@
-import { ofetch } from "ofetch";
 import { ResultAsync } from "neverthrow";
+import { ofetch } from "ofetch";
 
 import { useConfigRepository } from "~~/server/repositories/config";
 import type { ProcessingRiotEventJob } from "~~/shared/sse/inference/type";

@@ -34,7 +34,7 @@ export const useUserRepository = () => {
     );
   };
 
-  const createUser = (user: User) => {
+  const createUser = (user: typeof usersTable.$inferInsert) => {
     return ResultAsync.fromPromise(
       db.insert(usersTable).values(user),
       (err) => new Error(String(err))
