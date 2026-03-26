@@ -18,7 +18,7 @@ run = "pnpm run dev"
 
 [tasks.typecheck]
 description = "Run the typechecker"
-run = "pnpm dlx nuxt typecheck"
+run = "pnpm nuxt typecheck"
 
 [tasks.lint]
 description = "Run the lint"
@@ -29,8 +29,8 @@ description = "Run the knip"
 run = "pnpm nuxt prepare && pnpm exec knip --production --include files,dependencies"
 
 [tasks.validate]
-description = "Run the lint && typechecker"
-run = "mise lint && mise typecheck"
+description = "Run the lint && typechecker && knip"
+run = "mise lint && mise typecheck && mise knip"
 
 [tasks.act_validate]
 description = "Run the github action validate locally"
