@@ -54,3 +54,24 @@ jobs:
 
       - name: Typecheck
         run: mise run typecheck
+
+  knip:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Mise
+        uses: jdx/mise-action@v2
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Knip
+        run: mise run knip

@@ -24,6 +24,10 @@ run = "pnpm dlx nuxt typecheck"
 description = "Run the lint"
 run = "pnpm exec eslint --ext .js,.ts,.vue . --fix"
 
+[tasks.knip]
+description = "Run the knip"
+run = "pnpm nuxt prepare && pnpm exec knip --production --include files,dependencies"
+
 [tasks.validate]
 description = "Run the lint && typechecker"
 run = "mise lint && mise typecheck"
