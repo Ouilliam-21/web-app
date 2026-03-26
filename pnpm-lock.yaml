@@ -41,9 +41,6 @@ dependencies:
   eventsource:
     specifier: ^4.1.0
     version: 4.1.0
-  howler:
-    specifier: ^2.2.4
-    version: 2.2.4
   knip:
     specifier: ^6.0.6
     version: 6.0.6
@@ -6966,10 +6963,6 @@ packages:
 
   /hookable@6.1.0:
     resolution: {integrity: sha512-ZoKZSJgu8voGK2geJS+6YtYjvIzu9AOM/KZXsBxr83uhLL++e9pEv/dlgwgy3dvHg06kTz6JOh1hk3C8Ceiymw==}
-    dev: false
-
-  /howler@2.2.4:
-    resolution: {integrity: sha512-iARIBPgcQrwtEr+tALF+rapJ8qSc+Set2GJQl7xT1MQzWaVkFebdJhR3alVlSiUf5U7nAANKuj3aWpwerocD5w==}
     dev: false
 
   /http-errors@2.0.1:
