@@ -30,6 +30,17 @@ export default defineNuxtConfig({
   css: ["~/assets/css/tailwind.css"],
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: [
+        "vue-sonner",
+        "reka-ui",
+        "@vueuse/core",
+        "lucide-vue-next",
+        "clsx",
+        "tailwind-merge",
+        "class-variance-authority",
+      ],
+    },
   },
   tailwindcss: {
     exposeConfig: true,

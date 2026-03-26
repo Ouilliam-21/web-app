@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Ellipsis } from "lucide-vue-next"
 import {Play} from "lucide-vue-next"
+import type { AcceptableValue } from "reka-ui"
 import {computed} from "vue"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -24,7 +25,7 @@ const {
 
 const selectedId = computed(() => activeChannel.value.id)
 
-const onChannelChange = (id: string) => {
+const onChannelChange = (id: AcceptableValue) => {
   const match = items.value.find((item) => item.value === id)
   if (match) setActiveChannel({ id: match.value, name: match.label })
 }
@@ -52,7 +53,7 @@ const onChannelChange = (id: string) => {
         <Select
           :value="selectedId"
           :disabled="isPending || isConnected"
-          @update:model-value="(value: string) => onChannelChange(value)"
+          @update:model-value="(value: AcceptableValue) => onChannelChange(value)"
         >
           <SelectTrigger class="w-full">
             <SelectValue :placeholder="activeChannel.name || 'Select a channel'" />
