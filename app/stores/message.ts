@@ -19,7 +19,7 @@ export const useMessagesStore = defineStore("messages", () => {
   const updateMessage = (id: string, updates: ProcessingRiotEventJob) => {
     const index = messagesState.value.findIndex((m) => m.id === id);
 
-    if (updates.status === "completed" && index !== -1) {
+    if (updates.status === "COMPLETED" && index !== -1) {
       messagesState.value.splice(index, 1);
       messagesIds.value.delete(id);
     } else if (index !== -1) {
@@ -41,7 +41,7 @@ export const useMessagesStore = defineStore("messages", () => {
   const messages = computed(() => messagesState);
 
   const getCompletedMessages = computed(() => {
-    return messagesState.value.filter((m) => m.status === "completed");
+    return messagesState.value.filter((m) => m.status === "COMPLETED");
   });
 
   const clear = () => {

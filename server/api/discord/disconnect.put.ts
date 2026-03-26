@@ -19,7 +19,7 @@ export default useDefineHandler(async () => {
 
   return await repository
     .setDiscordConfig({
-      isConnected: true,
+      isConnected: false,
       channelId: "",
       channelName: "",
     })

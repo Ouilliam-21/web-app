@@ -24,7 +24,7 @@ export function useDefineHandler<
   // Wrap and set HTTP status code for ApiError returns
   return defineEventHandler<Request, Promise<ApiResponse<Data>> | ApiResponse<Data>>(async (event) => {
     const result = await handler(event);
-    if (result && (result as any).type === "error") {
+    if (result && (result).type === "error") {
       // Set the HTTP status from the error object if present, otherwise default to 500
       const status = (result as ApiError).status ?? 500;
       setResponseStatus(event, status);

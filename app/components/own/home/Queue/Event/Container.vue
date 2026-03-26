@@ -12,13 +12,13 @@ const {event} = defineProps<{
 
 const statusBadgeVariant = computed(() => {
   switch (event.status) {
-    case "processing":
+    case "PROCESSING":
       return "secondary";
-    case "failed":
+    case "FAILED":
       return "destructive";
     default:
-    case "completed":
-    case "pending":
+    case "COMPLETED":
+    case "PENDING":
       return "default";
   }
 });
@@ -49,7 +49,7 @@ const service = useDialogService()
                 </h4>
                 <Badge :variant="statusBadgeVariant">
                   {{ event.status }}
-                  <Spinner class="size-3 animate-spin" v-if="event.status === 'processing'"/>
+                  <Spinner class="size-3 animate-spin" v-if="event.status === 'PROCESSING'"/>
                 </Badge>
               </div>
               <div

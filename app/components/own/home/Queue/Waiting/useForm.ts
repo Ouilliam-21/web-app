@@ -44,14 +44,14 @@ export const useForm = () => {
 
     const onMessage = (event: ProcessingRiotEventJob) => {
         switch (event.status) {
-            case 'completed':
+            case 'COMPLETED':
                 service.setProcessingEvent(undefined)
                 service.addCompletedEvent([event])
                 break
-            case 'pending':
+            case 'PENDING':
                 service.addEvent(event)
                 break
-            case 'processing':
+            case 'PROCESSING':
                 service.removeEvent(event.id)
                 service.setProcessingEvent(event)
                 break

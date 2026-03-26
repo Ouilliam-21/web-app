@@ -44,7 +44,7 @@ export const useQueueStore = defineStore("queue", () => {
   const messages = computed(() => messagesState);
 
   const getCompletedMessages = computed(() => {
-    return messagesState.value.filter((m) => m.status === "completed");
+    return messagesState.value.filter((m) => m.status === "COMPLETED");
   });
 
   return {

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { Ellipsis } from "lucide-vue-next"
+import {Play} from "lucide-vue-next"
+import {computed} from "vue"
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
+
 import { useForm } from "./useForm"
-import {Play} from "lucide-vue-next"
 
 const {
   onDisconnect,
@@ -49,7 +52,7 @@ const onChannelChange = (id: string) => {
         <Select
           :value="selectedId"
           :disabled="isPending || isConnected"
-          @update:model-value="onChannelChange"
+          @update:model-value="(value: string) => onChannelChange(value)"
         >
           <SelectTrigger class="w-full">
             <SelectValue :placeholder="activeChannel.name || 'Select a channel'" />

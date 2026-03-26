@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Header, Models, Status,Users, Discord } from "~/components/own/settings";
+import { Discord,Header, Models, Status,Users } from "~/components/own/settings";
 
 </script>
 

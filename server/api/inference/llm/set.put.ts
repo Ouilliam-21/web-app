@@ -9,7 +9,7 @@ export default useDefineHandler<{
   const body = await readBody<{ name: string }>(event);
 
   if (!body.name) {
-    throw apiError({
+    return apiError({
       status: 400,
       title: "Missing name",
       detail: "The name is required",

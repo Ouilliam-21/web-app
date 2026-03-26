@@ -5,28 +5,41 @@ import { defineEventHandler } from "h3";
 import { useConfigRepository } from "~~/server/repositories/config";
 
 export default defineEventHandler(async (event) => {
-
   const conf = useRuntimeConfig();
-  const repository = useConfigRepository()
+  const repository = useConfigRepository();
 
-  const configResult = await repository.getAppConfig()
-  if (configResult.isErr()) return apiError({ status: 500, title: "Internal Server Error", detail: configResult.error.message });
-  const [res] = configResult.value;
+  const configResult = await repository.getAppConfig();
+  if (configResult.isErr())
+    return apiError({
+      status: 500,
+      title: "Internal Server Error",
+      detail: configResult.error.message,
+    });
 
-  if (!res || !res.ip || res.ip.trim() === "") {
-    throw new Error("SSE not available: Invalid or missing IP address");
+  const config = configResult.value;
+
+  if (isAbsent(config.ip) || config.ip.trim() === "") {
+    return apiError({
+      status: 500,
+      title: "Internal Server Error",
+      detail: "SSE not available: Invalid or missing IP address",
+    });
   }
 
-  if (res.status !== GPUStatus.RUNNING) {
-    throw new Error("SSE not running");
+  if (config.status !== GPUStatus.RUNNING) {
+    return apiError({
+      status: 500,
+      title: "Internal Server Error",
+      detail: "SSE not running",
+    });
   }
 
-  const url = `http://${res.ip}:8000/events/sse?token=${conf.inferenceAuthToken}`;
+  const url = `http://${config.ip}:8000/events/sse?token=${conf.inferenceAuthToken}`;
 
   setResponseHeaders(event, {
     "Content-Type": "text/event-stream",
     "Cache-Control": "no-cache, no-transform",
-    "Connection": "keep-alive",
+    Connection: "keep-alive",
     "X-Accel-Buffering": "no",
   });
 
@@ -35,8 +48,7 @@ export default defineEventHandler(async (event) => {
   const eventSource = new EventSource(url);
 
   eventSource.addEventListener("event_status", (event: MessageEvent) =>
-    //stream.push(event)
-  console.log(event)
+    stream.push(event)
   );
 
   return stream.send();

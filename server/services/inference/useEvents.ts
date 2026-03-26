@@ -1,47 +1,49 @@
-import { ResultAsync } from "neverthrow";
+import { errAsync, ResultAsync } from "neverthrow";
 import { ofetch } from "ofetch";
 
 import { useConfigRepository } from "~~/server/repositories/config";
 import type { ProcessingRiotEventJob } from "~~/shared/sse/inference/type";
 
 export const useEvents = () => {
-    const repository = useConfigRepository()
-    const conf = useRuntimeConfig();
+  const repository = useConfigRepository();
+  const conf = useRuntimeConfig();
 
-    const listEvents = () => {
-        return repository.getAppConfig().andThen(([config]) =>
-            ResultAsync.fromPromise(
-                ofetch<{
-                    events: ProcessingRiotEventJob[];
-                }>(`http://${config.ip}:8000/events/list`, {
-                    method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${conf.inferenceAuthToken}`,
-                    },
-                }),
-                (err) => new Error(String(err))
-            )
-        );
-    };
+  const listEvents = async () => {
+    const result = await repository.getAppConfig();
+    if (result.isErr()) return errAsync(result.error);
 
-    const resetEvents = () => {
-        return repository.getAppConfig().andThen(([config]) =>
-            ResultAsync.fromPromise(
-                ofetch<{
-                    status: "success";
-                }>(`http://${config.ip}:8000/events/clear`, {
-                    method: "PUT",
-                    headers: {
-                        Authorization: `Bearer ${conf.inferenceAuthToken}`,
-                    },
-                }),
-                (err) => new Error(String(err))
-            )
-        );
-    };
+    return ResultAsync.fromPromise(
+      ofetch<{
+        events: ProcessingRiotEventJob[];
+      }>(`http://${result.value.ip}:8000/events/list`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${conf.inferenceAuthToken}`,
+        },
+      }),
+      (err) => new Error(String(err)),
+    );
+  };
 
-    return {
-        listEvents,
-        resetEvents
-    }
-}
+  const resetEvents = async () => {
+    const result = await repository.getAppConfig();
+    if (result.isErr()) return errAsync(result.error);
+
+    return ResultAsync.fromPromise(
+      ofetch<{
+        status: "success";
+      }>(`http://${result.value.ip}:8000/events/clear`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${conf.inferenceAuthToken}`,
+        },
+      }),
+      (err) => new Error(String(err)),
+    );
+  };
+
+  return {
+    listEvents,
+    resetEvents,
+  };
+};

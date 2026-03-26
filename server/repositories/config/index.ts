@@ -1,7 +1,10 @@
 import {
+  type AppConfigValue,
+  AppConfigValueSchema,
   config as configTable,
   ConfigKey,
-  DiscordConfigValue,
+  type DiscordConfigValue,
+  DiscordConfigValueSchema,
   GPUStatus,
 } from "@Ouilliam-21/database";
 import { eq } from "drizzle-orm";
@@ -11,13 +14,34 @@ import { postgres } from "../conn";
 
 export const useConfigRepository = () => {
   const getDiscordConfig = () => {
-    return ResultAsync.fromPromise(
+    const result = ResultAsync.fromPromise(
       postgres
         .select()
         .from(configTable)
         .where(eq(configTable.key, ConfigKey.DISCORD)),
       (err) => new Error(String(err)),
     );
+
+    return result.andThen(([config]) => {
+      if (!config) {
+        return errAsync(new Error("Discord config not found"));
+      }
+      const parsed = DiscordConfigValueSchema.safeParse(config.value);
+
+      if (!parsed.success) {
+        return errAsync(
+          new Error(
+            `App config is invalid: ${parsed.error.issues.map((i) => i.message).join(", ")}`,
+          ),
+        );
+      }
+
+      return okAsync({
+        isConnected: parsed.data.isConnected,
+        channelId: parsed.data.channelId,
+        channelName: parsed.data.channelName,
+      });
+    });
   };
 
   const setDiscordConfig = (value: DiscordConfigValue) => {
@@ -46,49 +70,68 @@ export const useConfigRepository = () => {
       if (!config) {
         return errAsync(new Error("App config not found"));
       }
-      return okAsync(config);
+      const parsed = AppConfigValueSchema.safeParse(config.value);
+
+      if (!parsed.success) {
+        return errAsync(
+          new Error(
+            `App config is invalid: ${parsed.error.issues.map((i) => i.message).join(", ")}`,
+          ),
+        );
+      }
+
+      return okAsync({
+        ip: parsed.data.ip,
+        idDroplet: parsed.data.idDroplet,
+        status: parsed.data.status,
+      });
     });
   };
 
-  const updateConfigGpuStatus = (id: string, status: GPUStatus) => {
+  const updateConfigGpuStatus = (
+    config: AppConfigValue,
+    options: { status: GPUStatus },
+  ) => {
     return ResultAsync.fromPromise(
       postgres
         .update(configTable)
-        .set({ status: status })
-        .where(eq(configTable.id, id)),
+        .set({ value: { ...config, ...options } })
+        .where(eq(configTable.key, ConfigKey.APP)),
       (err) => new Error(String(err)),
     );
   };
 
   const updateConfig = (
-    id: string,
-    ip: string,
-    idDroplet: string,
-    status: GPUStatus,
+    config: AppConfigValue,
+    options: {
+      ip: string;
+      idDroplet: string;
+      status: GPUStatus;
+    },
   ) => {
     return ResultAsync.fromPromise(
       postgres
         .update(configTable)
         .set({
-          status: status,
-          idDroplet: idDroplet,
-          ip: ip,
+          value: { ...config, ...options },
         })
-        .where(eq(configTable.id, id)),
+        .where(eq(configTable.key, ConfigKey.APP)),
       (err) => new Error(String(err)),
     );
   };
 
-  const resetConfig = (id: string) => {
+  const resetConfig = () => {
     return ResultAsync.fromPromise(
       postgres
         .update(configTable)
         .set({
-          status: GPUStatus.SHUTDOWN,
-          idDroplet: "",
-          ip: "",
+          value: {
+            status: GPUStatus.SHUTDOWN,
+            idDroplet: "",
+            ip: "",
+          },
         })
-        .where(eq(configTable.id, id)),
+        .where(eq(configTable.key, ConfigKey.APP)),
       (err) => new Error(String(err)),
     );
   };

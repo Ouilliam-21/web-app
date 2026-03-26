@@ -32,7 +32,7 @@ const service = useDialogService()
     <Tooltip>
       <TooltipTrigger as-child>
         <ItemMedia variant="icon">
-        <CircleCheck v-if="item.status === 'completed'" />
+        <CircleCheck v-if="item.status === 'COMPLETED'" />
         <CircleX v-else />
       </ItemMedia>
       </TooltipTrigger>
@@ -49,9 +49,9 @@ const service = useDialogService()
           </div>
           <Badge
                     :variant="
-                      item.status === 'completed'
+                      item.status === 'COMPLETED'
                         ? 'default'
-                        : item.status === 'failed'
+                        : item.status === 'FAILED'
                         ? 'destructive'
                         : 'secondary'
                     "

@@ -66,9 +66,9 @@
                 <div class="mt-1">
                   <Badge
                     :variant="
-                      event.status === 'completed'
+                      event.status === 'COMPLETED'
                         ? 'default'
-                        : event.status === 'failed'
+                        : event.status === 'FAILED'
                         ? 'destructive'
                         : 'secondary'
                     "

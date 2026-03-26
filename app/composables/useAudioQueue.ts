@@ -1,5 +1,3 @@
-import { Howl } from "howler";
-
 import type { ProcessingRiotEventJob } from "~~/shared/sse/inference/type";
 
 export const useAudioQueue = () => {
@@ -7,7 +5,6 @@ export const useAudioQueue = () => {
   const currentAudio = ref<Maybe<HTMLAudioElement>>(undefined);
   const isPlaying = ref(false);
   const currentMessage = ref<Maybe<ProcessingRiotEventJob>>(undefined);
-  const minDelayBetweenMessages = 2000;
 
   const addToQueue = (job: ProcessingRiotEventJob) => {
     audioQueue.value.push(job);
@@ -20,30 +17,6 @@ export const useAudioQueue = () => {
     const nextMessage = audioQueue.value.shift();
     currentMessage.value = nextMessage;
     isPlaying.value = true;
-
-    const sound = new Howl({
-      src: [nextMessage?.audio_url],
-      html5: true,
-      onend: function () {
-        setTimeout(() => {
-          isPlaying.value = false;
-          currentMessage.value = null;
-          currentAudio.value = null;
-
-          processQueue();
-        }, minDelayBetweenMessages);
-      },
-    });
-
-    try {
-      await sound.play();
-    } catch (error) {
-      console.error("Error starting audio playback:", error);
-      isPlaying.value = false;
-      currentMessage.value = null;
-      currentAudio.value = null;
-      processQueue();
-    }
   };
 
   const stop = () => {

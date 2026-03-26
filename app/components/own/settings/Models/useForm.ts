@@ -42,8 +42,8 @@ export const useForm = (options: {
     const errorMessage = computed(() => {
         if (activeError.value) return 'Failed to load active model';
         if (itemsError.value) return 'Failed to load model list';
-        if (activeFetch.value?.type === 'error') return activeFetch.value.message;
-        if (itemsFetch.value?.type === 'error') return itemsFetch.value.message;
+        if (activeFetch.value?.type === 'error') return activeFetch.value.detail;
+        if (itemsFetch.value?.type === 'error') return itemsFetch.value.detail;
         return null;
     });
 

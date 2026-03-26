@@ -1,8 +1,6 @@
 import { ListObjectsV2Command, S3Client } from "@aws-sdk/client-s3";
 import { GPUStatus } from "@Ouilliam-21/database";
 import { errAsync, okAsync, ResultAsync } from "neverthrow";
-import { ResultAsync } from "neverthrow";
-import { ofetch } from "ofetch";
 import { ofetch } from "ofetch";
 
 import { useConfigRepository } from "~~/server/repositories/config";
@@ -115,10 +113,15 @@ export const useDigitalOcean = () => {
   };
 
   const startGPU = () => {
-    const { gpuId, gpuName, gpuRegion, gpuSize, gpuImage, gpuSshKeys } = conf;
+    const { gpuName, gpuRegion, gpuSize, gpuImage, gpuSshKeys } = conf;
 
     return repository
-      .updateConfigGpuStatus(gpuId, GPUStatus.STARTING)
+      .getAppConfig()
+      .andThen((config) =>
+        repository.updateConfigGpuStatus(config, {
+          status: GPUStatus.STARTING,
+        }),
+      )
       .andThen(() =>
         ResultAsync.fromPromise(
           (async () => {
@@ -172,7 +175,14 @@ export const useDigitalOcean = () => {
       )
       .andThen(({ res, ip }) =>
         repository
-          .updateConfig(gpuId, ip, res.droplet.id.toString(), GPUStatus.RUNNING)
+          .getAppConfig()
+          .andThen((config) =>
+            repository.updateConfig(config, {
+              ip: ip,
+              idDroplet: res.droplet.id.toString(),
+              status: GPUStatus.RUNNING,
+            }),
+          )
           .map(() => ({
             ip: ip,
             dropletId: res.droplet.id.toString(),
@@ -181,23 +191,24 @@ export const useDigitalOcean = () => {
   };
 
   const stopGPU = async () => {
-    const { gpuId } = conf;
-
     return repository
       .getAppConfig()
-      .andThen(([res]) =>
+      .andThen((config) =>
         ResultAsync.fromPromise(
-          ofetch("https://api.digitalocean.com/v2/droplets/" + res.idDroplet, {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + conf.digitalOceanTokenWrite,
+          ofetch(
+            "https://api.digitalocean.com/v2/droplets/" + config.idDroplet,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + conf.digitalOceanTokenWrite,
+              },
             },
-          }),
+          ),
           (err) => new Error(String(err)),
         ),
       )
-      .andThen((request) => repository.resetConfig(gpuId).map(() => request));
+      .andThen((request) => repository.resetConfig().map(() => request));
   };
 
   return {

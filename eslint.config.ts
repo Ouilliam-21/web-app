@@ -49,12 +49,16 @@ export default defineConfig([
       "@typescript-eslint": tsPlugin,
       drizzle,
     },
+    files: ["server/**/*.{ts,mts,cts,js,mjs,cjs}"],
     rules: {
       "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_" },
+      ],
       "@typescript-eslint/no-explicit-any": "warn",
       "drizzle/enforce-delete-with-where": "error",
       "drizzle/enforce-update-with-where": "error",
     },
-  }
+  },
 ]);

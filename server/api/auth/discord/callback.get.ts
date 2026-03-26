@@ -7,18 +7,34 @@ export default defineEventHandler(async (event) => {
   const { code } = getQuery<{ code: string }>(event);
 
   const { getAccessToken, getUserInfo } = useDiscord();
-  const {getUserByDiscordId, createUser,updateUserToken} = useUserRepository();
+  const { getUserByDiscordId, createUser, updateUserToken } =
+    useUserRepository();
 
   const tokensResult = await getAccessToken(code);
-  if (tokensResult.isErr()) return apiError({ status: 500, title: "Internal Server Error", detail: tokensResult.error.message });
+  if (tokensResult.isErr())
+    return apiError({
+      status: 500,
+      title: "Internal Server Error",
+      detail: tokensResult.error.message,
+    });
   const tokens = tokensResult.value;
 
   const userResult = await getUserInfo(tokens.access_token);
-  if (userResult.isErr()) return apiError({ status: 500, title: "Internal Server Error", detail: userResult.error.message });
+  if (userResult.isErr())
+    return apiError({
+      status: 500,
+      title: "Internal Server Error",
+      detail: userResult.error.message,
+    });
   const user = userResult.value;
 
   const existResult = await getUserByDiscordId(user.id);
-  if (existResult.isErr()) return apiError({ status: 500, title: "Internal Server Error", detail: existResult.error.message });
+  if (existResult.isErr())
+    return apiError({
+      status: 500,
+      title: "Internal Server Error",
+      detail: existResult.error.message,
+    });
   const [exist] = existResult.value;
 
   const token: Token = {
@@ -45,10 +61,20 @@ export default defineEventHandler(async (event) => {
 
   if (isAbsent(exist)) {
     const createResult = await createUser(values);
-    if (createResult.isErr()) return apiError({ status: 500, title: "Internal Server Error", detail: createResult.error.message });
+    if (createResult.isErr())
+      return apiError({
+        status: 500,
+        title: "Internal Server Error",
+        detail: createResult.error.message,
+      });
   } else {
     const updateResult = await updateUserToken(user.id, token);
-    if (updateResult.isErr()) return apiError({ status: 500, title: "Internal Server Error", detail: updateResult.error.message });
+    if (updateResult.isErr())
+      return apiError({
+        status: 500,
+        title: "Internal Server Error",
+        detail: updateResult.error.message,
+      });
   }
 
   setCookie(event, "auth", user.id);

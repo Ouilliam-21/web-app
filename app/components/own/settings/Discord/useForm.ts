@@ -25,7 +25,7 @@ export const useForm = () => {
 
   const errorMessage = computed<string | null>(() => {
     if (channelsError.value) return "Failed to load channels";
-    if (channels.value?.type === "error") return channels.value.message;
+    if (channels.value?.type === "error") return channels.value.detail;
     return null;
   });
 
@@ -70,8 +70,8 @@ export const useForm = () => {
           },
         }
       }
-    } catch (e: any) {
-      error("Error: " + (e?.data?.message ?? e?.message ?? "Unknown error"));
+    } catch (e) {
+      error("Error: " + String(e));
     } finally {
       isUpdating.value = false;
     }
@@ -93,8 +93,8 @@ export const useForm = () => {
           },
         }
       }  
-    } catch (e: any) {
-      error("Error: " + (e?.data?.message ?? e?.message ?? "Unknown error"));
+    } catch (e) {
+      error("Error: " + String(e));
     } finally {
       isUpdating.value = false;
     }
@@ -106,8 +106,8 @@ export const useForm = () => {
     try {
       await $fetch("/api/discord/audio", { method: "GET" });
       success("Audio played successfully");
-    } catch (e: any) {
-      error("Error: " + (e?.data?.message ?? e?.message ?? "Unknown error"));
+    } catch (e) {
+      error("Error: " + String(e));
     } finally {
       isUpdating.value = false;
     }

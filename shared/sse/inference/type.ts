@@ -2,7 +2,7 @@ export interface ProcessingRiotEventJob {
   id: string;
   riot_event_id: string;
   input_text: string;
-  status: "pending" | "processing" | "completed" | "failed";
+  status: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED";
   llm_started_at?: string;
   llm_completed_at?: string;
   llm_model_name?: string;

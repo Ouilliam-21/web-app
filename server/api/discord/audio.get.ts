@@ -7,14 +7,8 @@ import {
   useDefineHandler,
 } from "~~/server/utils/handler";
 
-export default useDefineHandler<{ message: string }>(async (event) => {
-  const filePath = path.join(
-    process.cwd(),
-    "public",
-    "test.wav",
-  );
-
-  console.log(filePath);
+export default useDefineHandler<{ message: string }>(async () => {
+  const filePath = path.join(process.cwd(), "public", "test.wav");
 
   if (!fs.existsSync(filePath)) {
     return apiError({
@@ -27,6 +21,7 @@ export default useDefineHandler<{ message: string }>(async (event) => {
   const stream = fs.createReadStream(filePath);
 
   try {
+    // eslint-disable-next-line no-async-promise-executor
     await new Promise<void>(async (resolve, reject) => {
       const timeout = setTimeout(
         () => reject(new Error("Playback timeout")),
@@ -46,11 +41,11 @@ export default useDefineHandler<{ message: string }>(async (event) => {
     });
 
     return apiSuccess({ message: "Audio played successfully" });
-  } catch (err: any) {
+  } catch (err) {
     return apiError({
       status: 500,
       title: "Internal Server Error Playing Audio",
-      detail: String(err.message ?? err),
+      detail: String(err),
     });
   }
 });

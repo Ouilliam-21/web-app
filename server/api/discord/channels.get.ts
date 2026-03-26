@@ -1,5 +1,3 @@
-import { DiscordConfigValue } from "@Ouilliam-21/database";
-
 import { useConfigRepository } from "~~/server/repositories/config";
 import { ChannelType, useDiscord } from "~~/server/services/discord";
 import { apiSuccess, useDefineHandler } from "~~/server/utils/handler";
@@ -27,11 +25,6 @@ export default useDefineHandler(async () => {
       detail: discordConfig.error.message,
     });
   }
-  
-  const activeChannel =
-    discordConfig.value.length > 0
-      ? (discordConfig.value[0].value as DiscordConfigValue)
-      : undefined;
 
   const voiceChannels = channels.value
     .filter((channel) => channel.type === ChannelType.GUILD_VOICE)
@@ -41,9 +34,9 @@ export default useDefineHandler(async () => {
     }));
 
   return apiSuccess({
-    activeChannel:{
-      id: activeChannel?.channelId,
-      name: activeChannel?.channelName,
+    activeChannel: {
+      id: discordConfig.value.channelId,
+      name: discordConfig.value.channelName,
     },
     channels: voiceChannels,
   });

@@ -15,7 +15,7 @@ export default useDefineHandler<User>(async (event) => {
   const id = getCookie(event, "auth") ?? "";
 
   const discord = useDiscord();
-  const userRepository = useUserRepository()
+  const userRepository = useUserRepository();
 
   const userResult = await userRepository.getUserByDiscordId(id);
 
@@ -38,11 +38,22 @@ export default useDefineHandler<User>(async (event) => {
       if (user.expireAt < new Date().getTime()) {
         const tokensResult = await discord.refreshToken(user.refreshToken);
         if (tokensResult.isErr())
-          return apiError({ status: 500, title: "Internal Server Error", detail: tokensResult.error.message });
+          return apiError({
+            status: 500,
+            title: "Internal Server Error",
+            detail: tokensResult.error.message,
+          });
 
-        const updateResult = await userRepository.updateUserToken(user.discordId, tokensResult.value);
+        const updateResult = await userRepository.updateUserToken(
+          user.discordId,
+          tokensResult.value,
+        );
         if (updateResult.isErr())
-          return apiError({ status: 500, title: "Internal Server Error", detail: updateResult.error.message });
+          return apiError({
+            status: 500,
+            title: "Internal Server Error",
+            detail: updateResult.error.message,
+          });
       }
 
       return apiSuccess({
@@ -54,6 +65,11 @@ export default useDefineHandler<User>(async (event) => {
         decoration: user.decorationAsset ?? "",
       });
     },
-    (err) => apiError({ status: 500, title: "Internal Server Error", detail: err.message })
+    (err) =>
+      apiError({
+        status: 500,
+        title: "Internal Server Error",
+        detail: err.message,
+      }),
   );
 });
