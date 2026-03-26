@@ -11,6 +11,7 @@
   } from "@/components/ui/dialog";
   import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
   import { useDialogService } from "~/services/dialogs";
+  import AudioPlayer from "~/components/own/custom/audio/AudioPlayer.vue";
   
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A";
@@ -160,10 +161,16 @@
               <div v-if="event.audio_url" class="space-y-2">
                 <span class="text-sm text-muted-foreground">Audio:</span>
                 <div class="w-full">
-                  <audio controls class="w-full">
+                  <AudioPlayer
+  v-if="event.audio_url"
+  :src="event.audio_url"
+  :duration="event.audio_duration"
+  :title="`TTS`"
+/>
+                  <!-- <audio controls class="w-full">
                     <source :src="event.audio_url" type="audio/mpeg" />
                     Your browser does not support the audio element.
-                  </audio>
+                  </audio> -->
                 </div>
               </div>
               <div v-else class="text-sm text-muted-foreground">

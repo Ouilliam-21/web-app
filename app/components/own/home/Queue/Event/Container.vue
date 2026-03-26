@@ -48,7 +48,7 @@ const service = useDialogService()
                   {{ event.input_text.substring(0, 20) }}...
                 </h4>
                 <Badge :variant="statusBadgeVariant">
-                  {{ event.status }}
+                  <span class="capitalize">{{ event.status.toLowerCase() }}</span>
                   <Spinner class="size-3 animate-spin" v-if="event.status === 'PROCESSING'"/>
                 </Badge>
               </div>

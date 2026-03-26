@@ -1,17 +1,7 @@
 <script setup lang="ts">
-import { Ellipsis } from "lucide-vue-next";
+import { Mouse, MouseOff, RotateCcw } from "lucide-vue-next";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from '@/components/ui/checkbox'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Label } from '@/components/ui/label'
 import {useToast} from "@/composables/useToast"
 import { useMessagesStore } from "@/stores/message";
 import { useFetch } from "#app";
@@ -36,28 +26,38 @@ const onReset = async () => {
     });
   }
 };
+
+const toggleAutoScroll = () => {
+  autoScroll.value = !autoScroll.value;
+};
 </script>
 
 <template>
-  <DropdownMenu>
-    <DropdownMenuTrigger as-child>
-      <Button variant="outline" size="icon">
-        <Ellipsis />
-      </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent class="w-56" align="start">
-      <DropdownMenuLabel>Settings</DropdownMenuLabel>
-      <DropdownMenuGroup>
-        <DropdownMenuItem>
-          <div class="flex items-center space-x-2">
-            <Label for="airplane-mode">Auto scroll</Label>
-            <Checkbox id="terms" v-model:model-value="autoScroll"/>
-          </div>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <p @click="onReset" class="size-full">Reset</p>
-        </DropdownMenuItem>
-      </DropdownMenuGroup>
-    </DropdownMenuContent>
-  </DropdownMenu>
+  <div class="flex items-center gap-2">
+        <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger as-child>
+          <Button variant="outline" size="icon" @click="onReset">
+            <RotateCcw />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Reset</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger as-child>
+          <Button variant="outline" size="icon" @click="toggleAutoScroll">
+            <MouseOff v-if="!autoScroll" />
+            <Mouse v-else />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{{ autoScroll ? "Disable auto scroll" : "Enable auto scroll" }}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  </div>
 </template>

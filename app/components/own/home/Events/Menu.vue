@@ -1,39 +1,60 @@
 <script setup lang="ts">
-import { Ellipsis } from "lucide-vue-next";
-
-import { Button } from "@/components/ui/button";
-import { Checkbox } from '@/components/ui/checkbox'
+import { Mouse, MouseOff, VolumeOff, Volume2 } from "lucide-vue-next";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Label } from '@/components/ui/label'
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 
 const autoScroll = defineModel<boolean>("autoScroll", { required: true });
 
+const autoPlayAudio = defineModel<boolean>("autoPlayAudio", { required: true });
+
+const toggleAutoScroll = () => {
+  autoScroll.value = !autoScroll.value;
+};
+
+const toggleAutoPlayAudio = () => {
+  autoPlayAudio.value = !autoPlayAudio.value;
+};
 </script>
 
 <template>
-  <DropdownMenu>
-    <DropdownMenuTrigger as-child>
-      <Button variant="outline" size="icon">
-        <Ellipsis />
-      </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent class="w-56" align="start">
-      <DropdownMenuLabel>Settings</DropdownMenuLabel>
-      <DropdownMenuGroup>
-        <DropdownMenuItem>
-          <div class="flex items-center space-x-2">
-            <Label for="airplane-mode">Auto scroll</Label>
-            <Checkbox id="terms" v-model:model-value="autoScroll"/>
-          </div>
-        </DropdownMenuItem>
-      </DropdownMenuGroup>
-    </DropdownMenuContent>
-  </DropdownMenu>
+  <div class="flex items-center gap-2">
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger as-child>
+          <Button variant="outline" size="icon" @click="toggleAutoPlayAudio">
+            <VolumeOff v-if="!autoPlayAudio" />
+            <Volume2 v-else />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>
+            {{
+              autoPlayAudio
+                ? "Disable auto play audio"
+                : "Enable auto play audio"
+            }}
+          </p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger as-child>
+          <Button variant="outline" size="icon" @click="toggleAutoScroll">
+            <MouseOff v-if="!autoScroll" />
+            <Mouse v-else />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{{ autoScroll ? "Disable auto scroll" : "Enable auto scroll" }}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  </div>
 </template>
