@@ -37,7 +37,7 @@ const service = useDialogService()
       </ItemMedia>
       </TooltipTrigger>
       <TooltipContent>
-        <p class="capitalize">{{ item.status }}</p>
+        <p class="capitalize">{{ item.status.toLowerCase() }}</p>
       </TooltipContent>
     </Tooltip>
   </TooltipProvider>
@@ -48,6 +48,7 @@ const service = useDialogService()
             {{ new Date(item.created_at).toLocaleTimeString() }}
           </div>
           <Badge
+          class="capitalize"
                     :variant="
                       item.status === 'COMPLETED'
                         ? 'default'
@@ -56,7 +57,7 @@ const service = useDialogService()
                         : 'secondary'
                     "
                   >
-                    {{ item.status }}
+                    {{ item.status.toLowerCase() }}
           </Badge>
         </ItemTitle>
         <ItemDescription v-if="item.llm_text">

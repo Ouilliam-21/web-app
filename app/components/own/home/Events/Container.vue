@@ -25,6 +25,8 @@ const {
 const service = useEventsService();
 
 const autoScroll = ref(false)
+const autoPlayAudio = ref(false)
+
 
 const eventsNumber = computed(() => {
   if (eventsStatus.value !== 'success' || !events.value || events.value.type !== 'success') {
@@ -43,7 +45,7 @@ const eventsNumber = computed(() => {
         <p>
           Live Events <span class="text-sm">({{ eventsNumber }})</span>
         </p>
-        <Menu v-model:auto-scroll="autoScroll" />
+        <Menu v-model:auto-scroll="autoScroll" v-model:auto-play-audio="autoPlayAudio" />
       </CardTitle>
       <CardDescription class="flex gap-3 items-center">
         <span>Live status</span>
@@ -69,7 +71,7 @@ const eventsNumber = computed(() => {
         <AlertTitle>Events Error</AlertTitle>
         <AlertDescription>{{ events.detail || events.title }}</AlertDescription>
       </Alert>
-      <Empty v-if="eventsStatus === 'success' && events?.type === 'success' && events.data.events.length === 0"/>
+      <Empty v-if="eventsStatus === 'success' && events?.type === 'success' && service.completedEvents.value.length === 0"/>
       <Events v-else-if="eventsStatus === 'success' && events?.type === 'success'" :events="events.data" :auto-scroll="autoScroll"/>
       </CardContent>
   </Card>
